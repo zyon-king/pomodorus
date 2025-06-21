@@ -541,6 +541,17 @@
             background-color: #607d8b;
         }
         
+        /* Estilos do Footer */
+        footer {
+            width: 100%;
+            padding: 15px 0;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            font-size: 0.9em;
+            color: white; /* Alterado para branco */
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
         #manageGistButton {
         	margin-top: 20px; 
             background-color: #003e80;
@@ -574,7 +585,7 @@
     </style>
 </head>
 <body>
-	<div id="particle-container"></div>
+	<div id="particle-container"></div>  
     
     <div class="alarm-container">
     
@@ -745,7 +756,11 @@
                 <button id="saveGistConfig">Salvar e Carregar</button>
             </div>
         </div>
-    </div>
+    </div>    
+
+    <footer>
+        <p>&copy; 2025 MyPomodorus. Todos os direitos reservados - ZyonKing.</p>
+    </footer>
 
     <script>
 
@@ -798,10 +813,38 @@
             return `pause-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
         }
 
-        // Função para mostrar mensagens de status
+        // *** Função para mostrar mensagens de status ***
         function showStatusMessage(message, isError = false) {
-            alarmDisplay.textContent = message;
+            alarmDisplay.innerHTML = message; // permite usar <br>
             alarmDisplay.style.color = isError ? '#d32f2f' : '#00796b';
+        }
+        
+        // Função de Boas-Vindas com Notificações do Sistema Operacional
+        function showWelcomeNotification() {
+            const welcomeMessage = "Bem-vindo(a) ao Pomodorus! Suas pausas estão prontas para começar.";
+            const notificationTitle = "Pomodorus"; // O título que aparecerá na notificação
+
+            // Verifica se as notificações são suportadas pelo navegador
+            if (!("Notification" in window)) {
+                console.warn("Este navegador não suporta notificações de desktop.");
+                return;
+            }
+
+            // Tenta exibir a notificação. Reutiliza a lógica de permissão existente.
+            if (Notification.permission === "granted") {
+                new Notification(notificationTitle, { body: welcomeMessage });
+            } else if (Notification.permission !== "denied") {
+                // Solicita permissão se ainda não foi concedida ou negada
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification(notificationTitle, { body: welcomeMessage });
+                    } else {
+                        console.warn("Permissão para notificações negada pelo usuário. Notificação de boas-vindas não será exibida.");
+                    }
+                });
+            } else {
+                console.warn("Notificações já foram negadas para este site. Notificação de boas-vindas não será exibida.");
+            }
         }
 
         // ==========================================================
@@ -1565,6 +1608,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkGistCredentials();
             updatePausesListUI(); // Garante que a lista de pausas é renderizada ao carregar
+            showWelcomeNotification();
+            // Chamada para exibir a primeira mensagem de orientação
+    		showStatusMessage("Lembre-se de permitir as notificações de aplicativos no seu sistema operacional.<br><br>Notificações podem não funcionar em navegações anônimas.", false);
         });
     </script>
 </body>
