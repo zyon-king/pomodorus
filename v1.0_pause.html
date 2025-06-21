@@ -945,305 +945,283 @@
         // ==========================================================
 
         class TimeCarousel {
-    constructor(options) {
-        this.mainCarouselElement = options.mainCarouselElement;
-        this.mainItemsContainer = options.mainItemsContainer;
-        this.upButton = options.upButton;
-        this.downButton = options.downButton;
-        this.selectionOverlay = options.selectionOverlay;
-        this.selectionItemsContainer = options.selectionItemsContainer;
-        this.currentValueRef = options.currentValueRef; // Object reference { value: N }
-        this.totalItems = options.totalItems;
-        this.itemHeight = 50;
-        this.itemsInView = 5;
-        this.bufferItems = Math.floor(this.itemsInView / 2);
-        this.numRepeats = 3; // For infinite scroll in overlay
+            constructor(options) {
+                this.mainCarouselElement = options.mainCarouselElement;
+                this.mainItemsContainer = options.mainItemsContainer;
+                this.upButton = options.upButton;
+                this.downButton = options.downButton;
+                this.selectionOverlay = options.selectionOverlay;
+                this.selectionItemsContainer = options.selectionItemsContainer;
+                this.currentValueRef = options.currentValueRef; // Object reference { value: N }
+                this.totalItems = options.totalItems;
+                this.itemHeight = 50;
+                this.itemsInView = 5;
+                this.bufferItems = Math.floor(this.itemsInView / 2);
+                this.numRepeats = 3; // For infinite scroll in overlay
 
-        this.isTransitioning = false; // Flag to prevent rapid jumps
+                this.isTransitioning = false; // Flag to prevent rapid jumps
 
-        this.populateMainCarousel();
-        this.updateMainCarouselPosition(this.currentValueRef.value);
-        this.setupMainCarouselScroll();
-        this.setupCarouselButtons();
-        this.populateSelectionCarousel(); // Initial population for overlays
-        this.setupSelectionCarouselInteraction(); // Chamada após popular o overlay
-    }
-
-    populateMainCarousel() {
-        this.mainItemsContainer.innerHTML = '';
-        for (let i = 0; i < this.totalItems; i++) {
-            const value = i.toString().padStart(2, '0');
-            const item = document.createElement('div');
-            item.classList.add('item');
-            item.textContent = value;
-            this.mainItemsContainer.appendChild(item);
-        }
-    }
-
-    updateMainCarouselPosition(currentIndex) {
-        this.mainItemsContainer.style.transform = `translateY(-${currentIndex * this.itemHeight}px)`;
-    }
-
-    setupMainCarouselScroll() {
-        this.mainItemsContainer.addEventListener('wheel', (event) => {
-            event.preventDefault();
-
-            let newCarouselValue = this.currentValueRef.value;
-
-            if (event.deltaY > 0) {
-                newCarouselValue = (newCarouselValue + 1);
-            } else {
-                newCarouselValue = (newCarouselValue - 1);
-            }
-
-            if (newCarouselValue > (this.totalItems - 1)) {
-                newCarouselValue = 0;
-            }
-            if (newCarouselValue < 0) {
-                newCarouselValue = (this.totalItems - 1);
-            }
-
-            this.currentValueRef.value = newCarouselValue;
-            this.updateMainCarouselPosition(this.currentValueRef.value);
-        });
-    }
-
-    setupCarouselButtons() {
-        if (this.upButton) {
-            this.upButton.addEventListener('click', () => {
-                let newCarouselValue = this.currentValueRef.value - 1;
-                if (newCarouselValue < 0) {
-                    newCarouselValue = this.totalItems - 1;
-                }
-                this.currentValueRef.value = newCarouselValue;
+                this.populateMainCarousel();
                 this.updateMainCarouselPosition(this.currentValueRef.value);
-            });
-        }
-        if (this.downButton) {
-            this.downButton.addEventListener('click', () => {
-                let newCarouselValue = this.currentValueRef.value + 1;
-                if (newCarouselValue > (this.totalItems - 1)) {
-                    newCarouselValue = 0;
+                this.setupMainCarouselScroll();
+                this.setupCarouselButtons();
+                this.populateSelectionCarousel(); // Initial population for overlays
+                this.setupSelectionCarouselInteraction(); // Chamada após popular o overlay
+            }
+
+            populateMainCarousel() {
+                this.mainItemsContainer.innerHTML = '';
+                for (let i = 0; i < this.totalItems; i++) {
+                    const value = i.toString().padStart(2, '0');
+                    const item = document.createElement('div');
+                    item.classList.add('item');
+                    item.textContent = value;
+                    this.mainItemsContainer.appendChild(item);
                 }
-                this.currentValueRef.value = newCarouselValue;
-                this.updateMainCarouselPosition(this.currentValueRef.value);
-            });
-        }
-    }
+            }
 
-    populateSelectionCarousel() {
-        this.selectionItemsContainer.innerHTML = '';
-        for (let r = 0; r < this.numRepeats; r++) {
-            for (let i = 0; i < this.totalItems; i++) {
-                const value = i.toString().padStart(2, '0');
-                const item = document.createElement('div');
-                item.classList.add('item');
-                item.textContent = value;
-                item.dataset.value = i;
-                item.dataset.fullIndex = (r * this.totalItems) + i;
-                this.selectionItemsContainer.appendChild(item);
+            updateMainCarouselPosition(currentIndex) {
+                this.mainItemsContainer.style.transform = `translateY(-${currentIndex * this.itemHeight}px)`;
+            }
 
-                item.addEventListener('click', (event) => {
-                    const selectedValue = parseInt(event.target.dataset.value);
-                    this.currentValueRef.value = selectedValue;
+            setupMainCarouselScroll() {
+                this.mainItemsContainer.addEventListener('wheel', (event) => {
+                    event.preventDefault();
+
+                    let newCarouselValue = this.currentValueRef.value;
+
+                    if (event.deltaY > 0) {
+                        newCarouselValue = (newCarouselValue + 1);
+                    } else {
+                        newCarouselValue = (newCarouselValue - 1);
+                    }
+
+                    if (newCarouselValue > (this.totalItems - 1)) {
+                        newCarouselValue = 0;
+                    }
+                    if (newCarouselValue < 0) {
+                        newCarouselValue = (this.totalItems - 1);
+                    }
+
+                    this.currentValueRef.value = newCarouselValue;
                     this.updateMainCarouselPosition(this.currentValueRef.value);
-                    this.selectionOverlay.classList.remove('active');
-                    this.updateModalCarouselFromOverlay();
                 });
             }
-        }
-    }
 
-    // Método para atualizar a posição do carrossel de seleção (overlay) usando transform
-    updateSelectionCarouselPosition(targetFullIndex, instant = false) {
-        const targetTransform = -(targetFullIndex * this.itemHeight);
-        if (instant) {
-            this.selectionItemsContainer.style.transition = `transform 0s ease-out`;
-        } else {
-            this.selectionItemsContainer.style.transition = `transform 0.2s ease-out`; // Ou a duração que preferir
-        }
-        this.selectionItemsContainer.style.transform = `translateY(${targetTransform}px)`;
-
-        // Força o reflow para aplicar a transição instantânea antes de redefinir
-        // eslint-disable-next-line no-unused-vars
-        const reflow = this.selectionItemsContainer.offsetWidth;
-
-        if (instant) {
-            // Após o "snap back" instantâneo, redefina a transição para permitir suavidade novamente
-            // Isso pode ser feito com um pequeno atraso ou no próximo ciclo de animação
-            setTimeout(() => {
-                this.selectionItemsContainer.style.transition = `transform 0.2s ease-out`;
-            }, 50); // Um pequeno atraso garante que o 0s seja aplicado
-        }
-    }
-
-    updateModalCarouselFromOverlay() {
-        if (this.mainItemsContainer) {
-            // Re-popule para garantir que os itens estejam atualizados, se necessário.
-            // Para apenas adicionar a classe 'selected', você não precisa repopular,
-            // apenas iterar e adicionar/remover classes.
-            // this.populateMainCarousel(); // Descomente se precisar recriar os elementos
-
-            const items = this.mainItemsContainer.children;
-            for (let i = 0; i < items.length; i++) {
-                items[i].classList.remove('selected');
-                if (parseInt(items[i].textContent) === this.currentValueRef.value) {
-                    items[i].classList.add('selected');
+            setupCarouselButtons() {
+                if (this.upButton) {
+                    this.upButton.addEventListener('click', () => {
+                        let newCarouselValue = this.currentValueRef.value - 1;
+                        if (newCarouselValue < 0) {
+                            newCarouselValue = this.totalItems - 1;
+                        }
+                        this.currentValueRef.value = newCarouselValue;
+                        this.updateMainCarouselPosition(this.currentValueRef.value);
+                    });
+                }
+                if (this.downButton) {
+                    this.downButton.addEventListener('click', () => {
+                        let newCarouselValue = this.currentValueRef.value + 1;
+                        if (newCarouselValue > (this.totalItems - 1)) {
+                            newCarouselValue = 0;
+                        }
+                        this.currentValueRef.value = newCarouselValue;
+                        this.updateMainCarouselPosition(this.currentValueRef.value);
+                    });
                 }
             }
-            this.updateMainCarouselPosition(this.currentValueRef.value);
-        }
-    }
 
-    setupSelectionCarouselInteraction() {
-        this.mainItemsContainer.parentElement.addEventListener('click', () => {
-            this.selectionOverlay.classList.add('active');
-            this.scrollToSelectedInOverlay();
-        });
+            populateSelectionCarousel() {
+                this.selectionItemsContainer.innerHTML = '';
+                for (let r = 0; r < this.numRepeats; r++) {
+                    for (let i = 0; i < this.totalItems; i++) {
+                        const value = i.toString().padStart(2, '0');
+                        const item = document.createElement('div');
+                        item.classList.add('item');
+                        item.textContent = value;
+                        item.dataset.value = i;
+                        item.dataset.fullIndex = (r * this.totalItems) + i;
+                        this.selectionItemsContainer.appendChild(item);
 
-        this.selectionOverlay.addEventListener('click', (event) => {
-            if (event.target === this.selectionOverlay) {
-                this.selectionOverlay.classList.remove('active');
-            }
-        });
-
-        // Adiciona rolagem do mouse ao overlay usando a nova lógica de transform
-        this.selectionItemsContainer.addEventListener('wheel', (event) => {
-            event.preventDefault();
-            // Calcula o novo índice baseado na rolagem da roda
-            let newFullIndex = this.getSelectionCarouselFullIndexFromTransform(); // Pega a posição atual
-            if (event.deltaY > 0) { // Scroll down
-                newFullIndex += 1;
-            } else { // Scroll up
-                newFullIndex -= 1;
+                        item.addEventListener('click', (event) => {
+                            const selectedValue = parseInt(event.target.dataset.value);
+                            this.currentValueRef.value = selectedValue;
+                            this.updateMainCarouselPosition(this.currentValueRef.value);
+                            this.selectionOverlay.classList.remove('active');
+                            this.updateModalCarouselFromOverlay();
+                        });
+                    }
+                }
             }
 
-            // Opcional: Limitar newFullIndex se não quiser rolagem "infinita" com a roda
-            // ou implementar uma lógica de wrap-around mais complexa aqui se o overlay
-            // tiver um número fixo de itens visíveis e você quiser que a rolagem da roda
-            // se "ajuste" ao final/início dos dados.
-            // Por enquanto, apenas move o transform.
+            // Método para atualizar a posição do carrossel de seleção (overlay) usando transform
+            updateSelectionCarouselPosition(targetFullIndex, instant = false) {
+                const targetTransform = -(targetFullIndex * this.itemHeight);
+                if (instant) {
+                    this.selectionItemsContainer.style.transition = `transform 0s ease-out`;
+                } else {
+                    this.selectionItemsContainer.style.transition = `transform 0.2s ease-out`; // Ou a duração que preferir
+                }
+                this.selectionItemsContainer.style.transform = `translateY(${targetTransform}px)`;
 
-            this.updateSelectionCarouselPosition(newFullIndex, false); // Não instantâneo para rolagem da roda
+                // Força o reflow para aplicar a transição instantânea antes de redefinir
+                // eslint-disable-next-line no-unused-vars
+                const reflow = this.selectionItemsContainer.offsetWidth;
+
+                if (instant) {
+                    // Após o "snap back" instantâneo, redefina a transição para permitir suavidade novamente
+                    // Isso pode ser feito com um pequeno atraso ou no próximo ciclo de animação
+                    setTimeout(() => {
+                        this.selectionItemsContainer.style.transition = `transform 0.2s ease-out`;
+                    }, 50); // Um pequeno atraso garante que o 0s seja aplicado
+                }
+            }
+
+            updateModalCarouselFromOverlay() {
+                if (this.mainItemsContainer) {
+                    
+                    const items = this.mainItemsContainer.children;
+                    for (let i = 0; i < items.length; i++) {
+                        items[i].classList.remove('selected');
+                        if (parseInt(items[i].textContent) === this.currentValueRef.value) {
+                            items[i].classList.add('selected');
+                        }
+                    }
+                    this.updateMainCarouselPosition(this.currentValueRef.value);
+                }
+            }
+
+            setupSelectionCarouselInteraction() {
+                this.mainItemsContainer.addEventListener('click', () => {
+                    this.selectionOverlay.classList.add('active');
+                    this.scrollToSelectedInOverlay();
+                });
+
+                this.selectionOverlay.addEventListener('click', (event) => {
+                    if (event.target === this.selectionOverlay) {
+                        this.selectionOverlay.classList.remove('active');
+                    }
+                });
+
+                // Adiciona rolagem do mouse ao overlay usando a nova lógica de transform
+                this.selectionItemsContainer.addEventListener('wheel', (event) => {
+                    event.preventDefault();
+                    // Calcula o novo índice baseado na rolagem da roda
+                    let newFullIndex = this.getSelectionCarouselFullIndexFromTransform(); // Pega a posição atual
+                    if (event.deltaY > 0) { // Scroll down
+                        newFullIndex += 1;
+                    } else { // Scroll up
+                        newFullIndex -= 1;
+                    }
+                    
+                    // Por enquanto, apenas move o transform.
+
+                    this.updateSelectionCarouselPosition(newFullIndex, false); // Não instantâneo para rolagem da roda
+                });
+
+                // Adicionar um listener para quando a transição do overlay terminar (para evitar "glitches")
+                this.selectionItemsContainer.addEventListener('transitionend', () => {
+                });
+            }
+
+            scrollToSelectedInOverlay() {
+                if (this.selectionOverlay.classList.contains('active')) {
+                    const selectedItemIndex = this.currentValueRef.value + this.totalItems; // Ir para a segunda repetição
+                    this.updateSelectionCarouselPosition(selectedItemIndex, true); // True para instantâneo ("snap back")
+                }
+            }
+
+            // Helper para obter o índice "fullIndex" atual do carrossel de seleção baseado no transform
+            getSelectionCarouselFullIndexFromTransform() {
+                const transformValue = window.getComputedStyle(this.selectionItemsContainer).transform;
+                if (transformValue && transformValue !== 'none') {
+                    const matrix = new DOMMatrixReadOnly(transformValue);
+                    return -Math.round(matrix.m42 / this.itemHeight); // m42 é o valor de translateY
+                }
+                return 0; // Padrão se não houver transform
+            }
+        }
+
+        // ==========================================================
+        // CONFIGURAÇÃO DOS CARROUSSELS E MODAIS
+        // ==========================================================
+
+        // Inicialização dos valores de referência para os carrosséis
+        const initialPauseHourRef = { value: 0 };
+        const initialPauseMinuteRef = { value: 0 };
+        const pauseDurationHourRef = { value: 0 };
+        const pauseDurationMinuteRef = { value: 0 };
+        const pauseEndHourRef = { value: 0 };
+        const pauseEndMinuteRef = { value: 0 };
+
+        // Carrosséis do modal de hora de início
+        const modalInitialPauseHourCarousel = new TimeCarousel({
+            mainCarouselElement: document.getElementById('modal-initial-pause-hour-carousel'),
+            mainItemsContainer: document.getElementById('modal-initial-pause-hour-items'),
+            upButton: document.querySelector('#modal-initial-pause-hour-carousel .carousel-button.up'),
+            downButton: document.querySelector('#modal-initial-pause-hour-carousel .carousel-button.down'),
+            selectionOverlay: document.getElementById('initial-pause-hour-selection-overlay'),
+            selectionItemsContainer: document.getElementById('initial-pause-hour-selection-items'),
+            currentValueRef: initialPauseHourRef,
+            totalItems: 24
         });
 
-        // Adicionar um listener para quando a transição do overlay terminar (para evitar "glitches")
-        this.selectionItemsContainer.addEventListener('transitionend', () => {
-            // A transição de "snap back" (0s) terminou.
-            // Aqui você pode implementar lógica para ajustar a posição real se estiver em um loop infinito
-            // e o usuário rolar além dos limites visíveis da "segunda repetição".
-            // Isso garante que o carrossel volte para a "segunda repetição"
-            // de forma transparente após a rolagem da roda atingir o limite.
-            // Exemplo:
-            // const currentTransformY = parseFloat(this.selectionItemsContainer.style.transform.replace('translateY(', '').replace('px)', ''));
-            // const currentFullIndex = -Math.round(currentTransformY / this.itemHeight);
-
-            // if (currentFullIndex < this.totalItems || currentFullIndex >= (2 * this.totalItems)) {
-            //     // Se a rolagem foi para fora da segunda repetição, ajuste para o equivalente na segunda.
-            //     const adjustedIndex = (currentFullIndex % this.totalItems) + this.totalItems;
-            //     this.updateSelectionCarouselPosition(adjustedIndex, true); // Snap back invisível
-            // }
+        const modalInitialPauseMinuteCarousel = new TimeCarousel({
+            mainCarouselElement: document.getElementById('modal-initial-pause-minute-carousel'),
+            mainItemsContainer: document.getElementById('modal-initial-pause-minute-items'),
+            upButton: document.querySelector('#modal-initial-pause-minute-carousel .carousel-button.up'),
+            downButton: document.querySelector('#modal-initial-pause-minute-carousel .carousel-button.down'),
+            selectionOverlay: document.getElementById('initial-pause-minute-selection-overlay'),
+            selectionItemsContainer: document.getElementById('initial-pause-minute-selection-items'),
+            currentValueRef: initialPauseMinuteRef,
+            totalItems: 60
         });
-    }
 
-    scrollToSelectedInOverlay() {
-        if (this.selectionOverlay.classList.contains('active')) {
-            const selectedItemIndex = this.currentValueRef.value + this.totalItems; // Ir para a segunda repetição
-            this.updateSelectionCarouselPosition(selectedItemIndex, true); // True para instantâneo ("snap back")
-        }
-    }
+        // Carrosséis do modal de duração
+        const modalPauseDurationHourCarousel = new TimeCarousel({
+            mainCarouselElement: document.getElementById('modal-pause-duration-hour'),
+            mainItemsContainer: document.getElementById('modal-pause-duration-hour-items'),
+            upButton: document.querySelector('#modal-pause-duration-hour .carousel-button.up'),
+            downButton: document.querySelector('#modal-pause-duration-hour .carousel-button.down'),
+            selectionOverlay: document.getElementById('pause-duration-hour-selection-overlay'),
+            selectionItemsContainer: document.getElementById('pause-duration-hour-selection-items'),
+            currentValueRef: pauseDurationHourRef,
+            totalItems: 24
+        });
 
-    // Helper para obter o índice "fullIndex" atual do carrossel de seleção baseado no transform
-    getSelectionCarouselFullIndexFromTransform() {
-        const transformValue = window.getComputedStyle(this.selectionItemsContainer).transform;
-        if (transformValue && transformValue !== 'none') {
-            const matrix = new DOMMatrixReadOnly(transformValue);
-            return -Math.round(matrix.m42 / this.itemHeight); // m42 é o valor de translateY
-        }
-        return 0; // Padrão se não houver transform
-    }
-}
+        const modalPauseDurationMinuteCarousel = new TimeCarousel({
+            mainCarouselElement: document.getElementById('modal-pause-duration-minute'),
+            mainItemsContainer: document.getElementById('modal-pause-duration-minute-items'),
+            upButton: document.querySelector('#modal-pause-duration-minute .carousel-button.up'),
+            downButton: document.querySelector('#modal-pause-duration-minute .carousel-button.down'),
+            selectionOverlay: document.getElementById('pause-duration-minute-selection-overlay'),
+            selectionItemsContainer: document.getElementById('pause-duration-minute-selection-items'),
+            currentValueRef: pauseDurationMinuteRef,
+            totalItems: 60
+        });
 
-// ==========================================================
-// CONFIGURAÇÃO DOS CARROUSSELS E MODAIS
-// ==========================================================
+        // Carrosséis do modal de hora de término
+        const modalPauseEndHourCarousel = new TimeCarousel({
+            mainCarouselElement: document.getElementById('modal-pause-end-hour'),
+            mainItemsContainer: document.getElementById('modal-pause-end-hour-items'),
+            upButton: document.querySelector('#modal-pause-end-hour .carousel-button.up'),
+            downButton: document.querySelector('#modal-pause-end-hour .carousel-button.down'),
+            selectionOverlay: document.getElementById('pause-end-hour-selection-overlay'),
+            selectionItemsContainer: document.getElementById('pause-end-hour-selection-items'),
+            currentValueRef: pauseEndHourRef,
+            totalItems: 24
+        });
 
-// Inicialização dos valores de referência para os carrosséis
-const initialPauseHourRef = { value: 0 };
-const initialPauseMinuteRef = { value: 0 };
-const pauseDurationHourRef = { value: 0 };
-const pauseDurationMinuteRef = { value: 0 };
-const pauseEndHourRef = { value: 0 };
-const pauseEndMinuteRef = { value: 0 };
-
-// Carrosséis do modal de hora de início
-const modalInitialPauseHourCarousel = new TimeCarousel({
-    mainCarouselElement: document.getElementById('modal-initial-pause-hour-carousel'),
-    mainItemsContainer: document.getElementById('modal-initial-pause-hour-items'),
-    upButton: document.querySelector('#modal-initial-pause-hour-carousel .carousel-button.up'),
-    downButton: document.querySelector('#modal-initial-pause-hour-carousel .carousel-button.down'),
-    selectionOverlay: document.getElementById('initial-pause-hour-selection-overlay'),
-    selectionItemsContainer: document.getElementById('initial-pause-hour-selection-items'),
-    currentValueRef: initialPauseHourRef,
-    totalItems: 24
-});
-
-const modalInitialPauseMinuteCarousel = new TimeCarousel({
-    mainCarouselElement: document.getElementById('modal-initial-pause-minute-carousel'),
-    mainItemsContainer: document.getElementById('modal-initial-pause-minute-items'),
-    upButton: document.querySelector('#modal-initial-pause-minute-carousel .carousel-button.up'),
-    downButton: document.querySelector('#modal-initial-pause-minute-carousel .carousel-button.down'),
-    selectionOverlay: document.getElementById('initial-pause-minute-selection-overlay'),
-    selectionItemsContainer: document.getElementById('initial-pause-minute-selection-items'),
-    currentValueRef: initialPauseMinuteRef,
-    totalItems: 60
-});
-
-// Carrosséis do modal de duração
-const modalPauseDurationHourCarousel = new TimeCarousel({
-    mainCarouselElement: document.getElementById('modal-pause-duration-hour'),
-    mainItemsContainer: document.getElementById('modal-pause-duration-hour-items'),
-    upButton: document.querySelector('#modal-pause-duration-hour .carousel-button.up'),
-    downButton: document.querySelector('#modal-pause-duration-hour .carousel-button.down'),
-    selectionOverlay: document.getElementById('pause-duration-hour-selection-overlay'),
-    selectionItemsContainer: document.getElementById('pause-duration-hour-selection-items'),
-    currentValueRef: pauseDurationHourRef,
-    totalItems: 24
-});
-
-const modalPauseDurationMinuteCarousel = new TimeCarousel({
-    mainCarouselElement: document.getElementById('modal-pause-duration-minute'),
-    mainItemsContainer: document.getElementById('modal-pause-duration-minute-items'),
-    upButton: document.querySelector('#modal-pause-duration-minute .carousel-button.up'),
-    downButton: document.querySelector('#modal-pause-duration-minute .carousel-button.down'),
-    selectionOverlay: document.getElementById('pause-duration-minute-selection-overlay'),
-    selectionItemsContainer: document.getElementById('pause-duration-minute-selection-items'),
-    currentValueRef: pauseDurationMinuteRef,
-    totalItems: 60
-});
-
-// Carrosséis do modal de hora de término
-const modalPauseEndHourCarousel = new TimeCarousel({
-    mainCarouselElement: document.getElementById('modal-pause-end-hour'),
-    mainItemsContainer: document.getElementById('modal-pause-end-hour-items'),
-    upButton: document.querySelector('#modal-pause-end-hour .carousel-button.up'),
-    downButton: document.querySelector('#modal-pause-end-hour .carousel-button.down'),
-    selectionOverlay: document.getElementById('pause-end-hour-selection-overlay'),
-    selectionItemsContainer: document.getElementById('pause-end-hour-selection-items'),
-    currentValueRef: pauseEndHourRef,
-    totalItems: 24
-});
-
-const modalPauseEndMinuteCarousel = new TimeCarousel({
-    mainCarouselElement: document.getElementById('modal-pause-end-minute'),
-    mainItemsContainer: document.getElementById('modal-pause-end-minute-items'),
-    upButton: document.querySelector('#modal-pause-end-minute .carousel-button.up'),
-    downButton: document.querySelector('#modal-pause-end-minute .carousel-button.down'),
-    selectionOverlay: document.getElementById('pause-end-minute-selection-overlay'),
-    selectionItemsContainer: document.getElementById('pause-end-minute-selection-items'),
-    currentValueRef: pauseEndMinuteRef,
-    totalItems: 60
-});
+        const modalPauseEndMinuteCarousel = new TimeCarousel({
+            mainCarouselElement: document.getElementById('modal-pause-end-minute'),
+            mainItemsContainer: document.getElementById('modal-pause-end-minute-items'),
+            upButton: document.querySelector('#modal-pause-end-minute .carousel-button.up'),
+            downButton: document.querySelector('#modal-pause-end-minute .carousel-button.down'),
+            selectionOverlay: document.getElementById('pause-end-minute-selection-overlay'),
+            selectionItemsContainer: document.getElementById('pause-end-minute-selection-items'),
+            currentValueRef: pauseEndMinuteRef,
+            totalItems: 60
+        });
         // ==========================================================
         // LÓGICA DOS MODAIS DE CONFIGURAÇÃO DE PAUSA
         // ==========================================================
