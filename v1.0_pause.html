@@ -1076,12 +1076,10 @@
 
             scrollToSelectedInOverlay() {
                 if (this.selectionOverlay.classList.contains('active')) {
-                    const selectedItemIndex = this.currentValueRef.value + this.totalItems; // Go to second repeat for better visual
+                    const selectedItemIndex = this.currentValueRef.value + this.totalItems;
                     const targetScroll = selectedItemIndex * this.itemHeight - (this.selectionOverlay.clientHeight / 2) + (this.itemHeight / 2);
-                    this.selectionItemsContainer.scrollTo({
-                        top: targetScroll,
-                        behavior: 'smooth'
-                    });
+                    this.selectionItemsContainer.style.transition = `transform 0s ease-out`;
+                    this.selectionItemsContainer.scrollTop = targetScroll;
                 }
             }
         }
