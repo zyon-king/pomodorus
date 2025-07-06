@@ -7,10 +7,10 @@ importScripts('https://js.pusher.com/beams/1.0/beams.min.js');
 // Configurações do Appwrite para buscar a Instance ID do Beams
 // VOCÊ PRECISA SUBSTITUIR ESTES VALORES PELOS SEUS REAIS DO APPWRITE
 const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1'; // Ou seu endpoint self-hosted, ex: 'http://localhost/v1'
-const APPWRITE_PROJECT_ID = 'YOUR_APPWRITE_PROJECT_ID'; // Seu ID de Projeto do Appwrite
-const APPWRITE_DATABASE_ID = 'YOUR_APPWRITE_DATABASE_ID'; // O ID do seu banco de dados (geralmente 'default')
-const APPWRITE_COLLECTION_ID = 'YOUR_APPWRITE_COLLECTION_ID'; // O ID da sua coleção de configurações (ex: 'config')
-const APPWRITE_DOCUMENT_ID = 'YOUR_APPWRITE_DOCUMENT_ID'; // O ID do documento onde está a beamsInstanceId (ex: 'beams_config' ou o ID gerado)
+const APPWRITE_PROJECT_ID = '686a67d5003a1b4b1bf9'; // Seu ID de Projeto do Appwrite
+const APPWRITE_DATABASE_ID = '686a68130002b51fced0'; // O ID do seu banco de dados (geralmente 'default')
+const APPWRITE_COLLECTION_ID = 'key'; // O ID da sua coleção de configurações (ex: 'config')
+const APPWRITE_DOCUMENT_ID = '686a6945002f2fa035d1'; // O ID do documento onde está a beamsInstanceId (ex: 'beams_config' ou o ID gerado)
 
 /**
  * Função para buscar a Instance ID do Pusher Beams do Appwrite.
