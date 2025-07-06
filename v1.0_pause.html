@@ -1599,6 +1599,32 @@
                 updatePausesListUI();
             }
         });
+        
+        // Adicione este código ao seu arquivo JavaScript principal (ex: script.js)
+        // ou dentro de um <script> no seu index.html
+
+        // ==========================================================
+        // REGISTRO DO SERVICE WORKER PARA NOTIFICAÇÕES PUSH
+        // ==========================================================
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('https://raw.githubusercontent.com/zyon-king/pomodorus/main/firebase-messaging-sw.js')
+                .then((registration) => {
+                    alert('Service Worker registrado com sucesso:', registration);
+                    // Após o registro do Service Worker, podemos tentar pedir permissão
+                    // e ativar o Beams no contexto da página (opcional, mas boa prática)
+                    requestNotificationPermissionAndInitializeBeams();
+                })
+                .catch((error) => {
+                    alert('Falha no registro do Service Worker:', error);
+                });
+        } else {
+            console.warn('Este navegador não suporta Service Workers para notificações push.');
+            showStatusMessage('Seu navegador não suporta notificações push. Considere atualizar ou usar um navegador diferente.', true);
+        }
+
+        // A função requestNotificationPermissionAndInitializeBeams será criada na próxima etapa,
+        // mas já está referenciada aqui para mostrar o fluxo.
 
         // ==========================================================
         // INICIALIZAÇÃO GERAL
