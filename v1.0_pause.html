@@ -1608,7 +1608,7 @@
         // ==========================================================
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('https://raw.githubusercontent.com/zyon-king/pomodorus/main/firebase-messaging-sw.js')
+            navigator.serviceWorker.register('/firebase-messaging-sw.js')
                 .then((registration) => {
                     alert('Service Worker registrado com sucesso:', registration);
                     // Após o registro do Service Worker, podemos tentar pedir permissão
