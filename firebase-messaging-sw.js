@@ -1,30 +1,47 @@
 // firebase-messaging-sw.js
 
+// O importScripts para o SDK do Beams no Service Worker AINDA É ESSENCIAL
+// Ele configura a infraestrutura para o Beams no Service Worker.
 importScripts('https://js.pusher.com/beams/service-worker.js');
 
 // Mantenha suas credenciais:
 const BEAMS_INSTANCE_ID = '817d3c15-5b04-4da3-ae94-eaee8b489330';
-// const BEAMS_PRIMARY_KEY = '...'; // Primary key não é usada no SW, apenas o Instance ID
 
-// É crucial que esta linha venha DEPOIS do importScripts e que o objeto PusherPushNotifications
-// esteja disponível.
-PusherPushNotifications.onBackgroundNotification(function(payload) {
-  console.log('Notificação Beams recebida em segundo plano:', payload);
+// No Service Worker, você precisa adicionar um listener para o evento 'push'.
+// O SDK do Beams, quando importado, já lida com o parse da payload
+// e o dispacha através do evento 'push' que o Service Worker recebe.
+self.addEventListener('push', function(event) {
+  // Verifique se há dados na notificação
+  const payload = event.data ? event.data.json() : {};
 
-  const title = payload.notification.title || 'Nova Notificação';
+  console.log('Notificação Beams recebida no evento push:', payload);
+
+  // Aqui você pode personalizar como a notificação será exibida.
+  // Os dados da notificação geralmente vêm em payload.notification (para título/corpo)
+  // e payload.data (para dados personalizados).
+  const title = payload.notification && payload.notification.title || 'Nova Notificação';
   const options = {
-    body: payload.notification.body || 'Você tem uma nova mensagem.',
-    icon: payload.notification.icon || '/assets/icon.png',
-    badge: '/assets/badge.png',
-    data: payload.data,
+    body: payload.notification && payload.notification.body || 'Você tem uma nova mensagem.',
+    icon: payload.notification && payload.notification.icon || '/assets/icon.png', // Ajuste conforme seu projeto
+    badge: '/assets/badge.png', // Opcional, ajuste conforme seu projeto
+    data: payload.data || {}, // Anexa dados personalizados
+    // Adicione outras opções da API de Notificação, como `vibrate`, `image`, `actions`, etc.
+    // actions: [
+    //   { action: 'explore', title: 'Explorar' },
+    //   { action: 'close', title: 'Fechar Notificaçao' }
+    // ]
   };
 
-  return self.registration.showNotification(title, options);
+  // Garanta que o Service Worker permaneça ativo até que a notificação seja mostrada.
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
 });
 
 self.addEventListener('notificationclick', function(event) {
   console.log('Notificação clicada:', event.notification);
-  event.notification.close();
+  event.notification.close(); // Fecha a notificação automaticamente ao clicar
+
   if (event.action === 'explore') {
     clients.openWindow('https://zyon-king.github.io/pomodorus/');
   } else {
