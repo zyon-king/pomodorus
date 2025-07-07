@@ -6,7 +6,8 @@
     <title>Pomodorus</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto+Mono:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
+    <script src="https://js.pusher.com/beams/1.0/beams.min.js"></script>
+	
     <style>
         body {
             font-family: 'Orbitron', sans-serif; /* Orbitron para o corpo */
@@ -1601,9 +1602,47 @@
         });
         
 	// ==========================================================
-	// REGISTRO DO SERVICE WORKER PARA NOTIFICAÇÕES PUSH
+	// INICIALIZAR O CLIENTE PUSHER BEAMS:
 	// ==========================================================
 	
+	// Inclua o SDK do Beams cliente NO SEU HTML:
+	// <script src="https://js.pusher.com/beams/1.0/beams.min.js"></script*/
+	
+	function requestNotificationPermissionAndInitializeBeams() {
+	    // Verifique se o PusherBeams SDK foi carregado
+	    if (typeof PusherPushNotifications !== 'undefined' && PusherPushNotifications.Client) {
+	        const beamsClient = new PusherPushNotifications.Client({
+	            instanceId: '817d3c15-5b04-4da3-ae94-eaee8b489330', // Seu Instance ID
+	        });
+	
+	        beamsClient.start()
+	            .then(() => beamsClient.addDeviceInterest('hello')) // Exemplo: Adiciona interesse 'hello'
+	            .then(() => console.log('Pusher Beams inicializado e interesse adicionado!'))
+	            .catch(error => {
+	                console.error('Falha ao inicializar Pusher Beams:', error);
+	                alert('Erro ao inicializar notificações.'); // Adicione um alert para feedback
+	            });
+	    } else {
+	        console.warn('Pusher Beams SDK não carregado ou não inicializado corretamente.');
+	        alert('As notificações não podem ser ativadas. Recarregue a página ou tente em outro navegador.');
+	    }
+	
+	    // Opcional: Pedir permissão de notificação diretamente aqui,
+	    // embora o BeamsClient.start() geralmente já faça isso.
+	    if ('Notification' in window && Notification.permission !== 'granted') {
+	        Notification.requestPermission().then(function(permission) {
+	            if (permission === 'granted') {
+	                console.log('Permissão de notificação concedida.');
+	            } else {
+	                console.warn('Permissão de notificação negada.');
+	            }
+	        });
+	    }
+	}
+	    
+	// ==========================================================
+	// REGISTRO DO SERVICE WORKER PARA NOTIFICAÇÕES
+	// ==========================================================   
 	if ('serviceWorker' in navigator) {
 	    navigator.serviceWorker.register('/pomodorus/firebase-messaging-sw.js')
 	        .then((registration) => {
