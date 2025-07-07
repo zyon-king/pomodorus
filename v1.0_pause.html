@@ -7,6 +7,7 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto+Mono:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script>
+    <script src="https://nyc.cloud.appwrite.io/v1"></script>
 	
     <style>
         body {
@@ -586,7 +587,11 @@
     </style>
 </head>
 <body>
-	<div id="particle-container"></div>  
+    <button id="sendAppwriteNotification" style="margin-left: 10px; padding: 10px 20px; font-size: 16px;">
+        Disparar Notificação (Appwrite)
+    </button>
+	
+    <div id="particle-container"></div>  
     
     <div class="alarm-container">
     
@@ -1605,8 +1610,7 @@
 	// INICIALIZAR O CLIENTE PUSHER BEAMS:
 	// ==========================================================
 	
-	// Inclua o SDK do Beams cliente NO SEU HTML:
-	// <script src="https://js.pusher.com/beams/1.0/beams.min.js"></script*/
+	// lembre de incluir o SDK do Beams cliente NO <head>
 	function requestNotificationPermissionAndInitializeBeams(swRegistration) { // swRegistration já vem aqui!
 	    // Verifique se o PusherBeams SDK foi carregado
 	    if (typeof PusherPushNotifications !== 'undefined' && PusherPushNotifications.Client) {
@@ -1652,23 +1656,47 @@
 	// ==========================================================
 	// REGISTRO DO SERVICE WORKER PARA NOTIFICAÇÕES
 	// ==========================================================   
-	if ('serviceWorker' in navigator) {
-	    document.addEventListener('DOMContentLoaded', function() { // Certifique-se de que este listener esteja ativo
+	function registerServiceWorkerAndInitializeBeams() {
+	    if ('serviceWorker' in navigator) {
 	        navigator.serviceWorker.register('/pomodorus/firebase-messaging-sw.js')
 	            .then((registration) => {
 	                console.log('Service Worker registrado com sucesso:', registration);
 	                alert('Service Worker registrado com sucesso:');
-	                // Chame a função passando o objeto de registro do Service Worker
 	                requestNotificationPermissionAndInitializeBeams(registration);
 	            })
 	            .catch((error) => {
 	                console.error('Falha no registro do Service Worker:', error);
 	                alert('Falha no registro do Service Worker:');
 	            });
-	    });
-	} else {
-	    console.warn('Este navegador não suporta Service Workers para notificações push.');
-	    alert('Seu navegador não suporta notificações push.');
+	    } else {
+	        console.warn('Este navegador não suporta Service Workers para notificações push.');
+	        alert('Seu navegador não suporta notificações push.');
+	    }
+	}
+
+        // ==========================================================
+        // NOTIFICAÇÃO VIA APPWARITE ATRAVÉS DO BOTÃO
+        // ==========================================================
+	let appwriteClient;
+	let appwriteFunctions;
+
+	// lembre de incluir o SDK do AppWrite cliente NO <head>
+	function initializeAppwriteAndButtons() {
+	    if (typeof Appwrite !== 'undefined') {
+	        const { Client, Functions } = Appwrite;
+	        appwriteClient = new Client(); // Atribui à global
+	        appwriteClient.setEndpoint('https://nyc.cloud.appwrite.io/v1').setProject('686a67d5003a1b4b1bf9');
+	        appwriteFunctions = new Functions(appwriteClient); // Atribui à global
+	
+	        const sendAppwriteNotificationButton = document.getElementById('sendAppwriteNotification');
+	        if (sendAppwriteNotificationButton) {
+	            sendAppwriteNotificationButton.addEventListener('click', sendNotificationViaAppwrite);
+	        } else {
+	            console.warn('O botão de enviar notificação do Appwrite não foi encontrado.');
+	        }
+	    } else {
+	        console.error('SDK do Appwrite não carregado.');
+	    }
 	}
 
         // ==========================================================
@@ -1681,8 +1709,10 @@
             updatePausesListUI(); // Garante que a lista de pausas é renderizada ao carregar
             showWelcomeNotification();
             // Chamada para exibir a primeira mensagem de orientação
-    		showStatusMessage("Lembre-se de permitir as notificações de aplicativos no seu sistema operacional.<br><br>Notificações podem não funcionar em navegações anônimas.", false);
-        });
+	    showStatusMessage("Lembre-se de permitir as notificações de aplicativos no seu sistema operacional.<br><br>Notificações podem não funcionar em navegações anônimas.", false);
+            registerServiceWorkerAndInitializeBeams()
+	    initializeAppwriteAndButtons();
+	});
     </script>
 </body>
 </html>
