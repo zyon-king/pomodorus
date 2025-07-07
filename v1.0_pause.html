@@ -1675,27 +1675,80 @@
 	}
 
         // ==========================================================
-        // NOTIFICAÇÃO VIA APPWARITE ATRAVÉS DO BOTÃO
+        // --- FUNÇÃO PARA ENVIAR NOTIFICAÇÃO VIA APPWRITE ---
         // ==========================================================
-	let appwriteClient;
-	let appwriteFunctions;
-
-	// lembre de incluir o SDK do AppWrite cliente NO <head>
+	async function sendNotificationViaAppwrite() {
+	    try {
+	        alert('Enviando notificação via Appwrite...');
+	        // Verifica se o objeto appwriteFunctions foi inicializado
+	        if (!appwriteFunctions) {
+	            console.error('Appwrite Functions não está inicializado. Verifique a inicialização do SDK.');
+	            alert('Erro: Serviço de notificação não pronto. Tente recarregar a página.');
+	            return;
+	        }
+	
+	        const result = await appwriteFunctions.createExecution(
+	            '686bda4600244b6e4296', // **SEU ID DA FUNÇÃO APPWRITE** - Este é o ID da sua função 'sendBeamsNotification'
+	            JSON.stringify({
+	                title: "Pomodorus Alert!",
+	                body: "Seu bloco de foco terminou. Hora do descanso!"
+	                // Você pode adicionar outros dados aqui que sua função Appwrite espera
+	                // Exemplo: 'user_id': 'ID_DO_USUARIO_ATUAL'
+	            })
+	        );
+	
+	        console.log('Appwrite Function executada com sucesso:', result);
+	        alert('Notificação solicitada via Appwrite!');
+	    } catch (error) {
+	        console.error('Erro ao chamar a Função Appwrite:', error);
+	        // Exibe uma mensagem de erro mais detalhada para o usuário
+	        alert(`Falha ao enviar notificação via Appwrite. Detalhes: ${error.message || 'Erro desconhecido.'}. Verifique o console para mais informações.`);
+	    }
+	}
+	
+	
+	// --- FUNÇÃO PARA INICIALIZAR APPWRITE E OS LISTENERS DOS BOTÕES ---
 	function initializeAppwriteAndButtons() {
 	    if (typeof Appwrite !== 'undefined') {
 	        const { Client, Functions } = Appwrite;
-	        appwriteClient = new Client(); // Atribui à global
-	        appwriteClient.setEndpoint('https://nyc.cloud.appwrite.io/v1').setProject('686a67d5003a1b4b1bf9');
-	        appwriteFunctions = new Functions(appwriteClient); // Atribui à global
+	        appwriteClient = new Client();
+	        appwriteClient
+	            .setEndpoint('https://nyc.cloud.appwrite.io/v1') // Seu endpoint do Appwrite
+	            .setProject('686a67d5003a1b4b1bf9'); // Seu Project ID do Appwrite
+	
+	        appwriteFunctions = new Functions(appwriteClient);
 	
 	        const sendAppwriteNotificationButton = document.getElementById('sendAppwriteNotification');
 	        if (sendAppwriteNotificationButton) {
+	            // **AQUI CHAMAMOS A FUNÇÃO sendNotificationViaAppwrite NO CLIQUE**
 	            sendAppwriteNotificationButton.addEventListener('click', sendNotificationViaAppwrite);
 	        } else {
 	            console.warn('O botão de enviar notificação do Appwrite não foi encontrado.');
 	        }
+	
+	        // --- Lógica do botão de Notificação Local (se ainda estiver usando) ---
+	        const testNotificationButton = document.getElementById('testNotificationButton');
+	        if (testNotificationButton) {
+	            testNotificationButton.addEventListener('click', () => {
+	                if ('Notification' in window) {
+	                    if (Notification.permission === 'granted') {
+	                        alert('Permissão de notificação concedida! O dispositivo está pronto para receber notificações push.');
+	                        console.log('Dispositivo pronto para receber notificações push.');
+	                    } else if (Notification.permission === 'denied') {
+	                        alert('Permissão de notificação negada. Você precisa permiti-las nas configurações do navegador.');
+	                        console.warn('Permissão de notificação negada.');
+	                    } else {
+	                        alert('Permissão de notificação ainda não concedida. Por favor, aceite a solicitação.');
+	                    }
+	                } else {
+	                    alert('Seu navegador não suporta a API de Notificações.');
+	                    console.warn('API de Notificações não suportada.');
+	                }
+	            });
+	        }
+	
 	    } else {
-	        console.error('SDK do Appwrite não carregado.');
+	        console.error('SDK do Appwrite não carregado. Verifique a tag script no HTML.');
 	    }
 	}
 
