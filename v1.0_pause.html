@@ -799,7 +799,7 @@
         let activePauses = []; // Array para armazenar todos os objetos de pausa
         let hasDailyResetOccurred = false; // Flag para controlar o reset de pausas diárias
         
-        const silentAudio = new Audio('silent-audio-1-sec.mp3');
+        const silentAudio = new Audio('https://raw.githubusercontent.com/w3teal/awesome-ringtone/main/Google%20Pixel/2021%20-%20Your%20New%20Adventure.mp3');
         const notificationSound = new Audio('https://files.catbox.moe/1f75z8.mp3'); // Certifique-se de ter um arquivo notification.mp3
         const alarmDisplay = document.getElementById('alarmDisplay'); // Elemento para mensagens de status
 
@@ -929,6 +929,7 @@
         }
 
         function triggerNotification(message) {
+        	muteBackgroundAudio()
             showStatusMessage(message, false); // Exibe mensagem na tela
             playNotificationSound(); // Toca o som
             if (Notification.permission === "granted") {
@@ -1571,6 +1572,7 @@
         const gistIdInput = document.getElementById('gist-id');
 
         manageGistButton.addEventListener('click', () => {
+        	startBackgroundActivity();
             gistConfigModal.classList.add('active');
             gistTokenInput.value = localStorage.getItem('github_pat') || '';
             gistIdInput.value = localStorage.getItem('gist_id') || '';
@@ -1613,19 +1615,32 @@
         // TOCAR AUDIO PARA MANTER ATIVIDADE DA PAGINA:
         // ==========================================================
         function startBackgroundActivity() {
-            manageGistButton.addEventListener('click', () => {
-            	silentAudio.loop = true;
-                silentAudio.play()
-                    .then(() => {
-                        appendLog("Áudio silencioso iniciado (loop).", "success");
-                    })
-                    .catch(error => {
-                        // This catch block handles cases where autoplay is blocked
-                        appendLog(`Erro ao iniciar áudio: ${error.message}. Isso pode ocorrer se o navegador bloquear o autoplay sem interação.`, "error");
-                    });
-            });
+            // Set audio to loop
+            silentAudio.loop = true;
+
+            // Attempt to play audio
+            silentAudio.play()
+                .then(() => {
+                    appendLog("Áudio iniciado (em loop).", "success");     
+                    appendLog("Contador de fundo iniciado.", "info");
+                    startButton.disabled = true;
+                    stopButton.disabled = false;
+                })
+                .catch(error => {
+                    // Handle cases where autoplay is blocked or other errors occur
+                    appendLog(`Erro ao iniciar áudio: ${error.message}. O áudio requer interação do usuário.`, "error");
+                    // If audio fails to play, don't start the counter (or handle it differently)
+                    appendLog("A atividade em segundo plano não foi iniciada devido ao erro do áudio.", "error");
+                });
         }
         
+        function muteBackgroundAudio() {
+            // Set the 'muted' property to true
+            silentAudio.muted = true;
+
+            appendLog("Áudio mutado.", "info");
+        }
+
         // ==========================================================
         // INICIALIZAR O CLIENTE PUSHER BEAMS:
         // ==========================================================
