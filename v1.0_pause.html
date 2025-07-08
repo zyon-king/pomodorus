@@ -929,7 +929,6 @@
         }
 
         function triggerNotification(message) {
-        	muteBackgroundAudio()
             showStatusMessage(message, false); // Exibe mensagem na tela
             playNotificationSound(); // Toca o som
             if (Notification.permission === "granted") {
@@ -1615,30 +1614,25 @@
         // TOCAR AUDIO PARA MANTER ATIVIDADE DA PAGINA:
         // ==========================================================
         function startBackgroundActivity() {
+            const message = "A atividade em segundo plano foi iniciada com sucesso.";
+            const notificationTitle = "Pomodorus"; // O título que aparecerá na notificação
             // Set audio to loop
             silentAudio.loop = true;
+            silentAudio.muted = true;
 
             // Attempt to play audio
             silentAudio.play()
                 .then(() => {
                     appendLog("Áudio iniciado (em loop).", "success");     
                     appendLog("Contador de fundo iniciado.", "info");
-                    startButton.disabled = true;
-                    stopButton.disabled = false;
                 })
                 .catch(error => {
                     // Handle cases where autoplay is blocked or other errors occur
                     appendLog(`Erro ao iniciar áudio: ${error.message}. O áudio requer interação do usuário.`, "error");
                     // If audio fails to play, don't start the counter (or handle it differently)
                     appendLog("A atividade em segundo plano não foi iniciada devido ao erro do áudio.", "error");
-                });
-        }
-        
-        function muteBackgroundAudio() {
-            // Set the 'muted' property to true
-            silentAudio.muted = true;
-
-            appendLog("Áudio mutado.", "info");
+                });          
+            new Notification(notificationTitle, { body: message });
         }
 
         // ==========================================================
