@@ -798,6 +798,8 @@
         // ==========================================================
         let activePauses = []; // Array para armazenar todos os objetos de pausa
         let hasDailyResetOccurred = false; // Flag para controlar o reset de pausas diárias
+        
+        const silentAudio = new Audio('silent-audio-1-sec.mp3');
         const notificationSound = new Audio('https://files.catbox.moe/1f75z8.mp3'); // Certifique-se de ter um arquivo notification.mp3
         const alarmDisplay = document.getElementById('alarmDisplay'); // Elemento para mensagens de status
 
@@ -1606,151 +1608,168 @@
             }
         });
         
-	// ==========================================================
-	// INICIALIZAR O CLIENTE PUSHER BEAMS:
-	// ==========================================================
-	
-	// lembre de incluir o SDK do Beams cliente NO <head>
-	function requestNotificationPermissionAndInitializeBeams(swRegistration) { // swRegistration já vem aqui!
-	    // Verifique se o PusherBeams SDK foi carregado
-	    if (typeof PusherPushNotifications !== 'undefined' && PusherPushNotifications.Client) {
-	        // NÃO PRECISA do navigator.serviceWorker.getRegistration() AQUI
-	        // Porque o swRegistration já foi passado como parâmetro da função
-	
-	        if (swRegistration) { // Verifique se o registration foi passado corretamente
-	            const beamsClient = new PusherPushNotifications.Client({
-	                instanceId: '817d3c15-5b04-4da3-ae94-eaee8b489330',
-	                serviceWorkerRegistration: swRegistration, // Use o parâmetro que você recebeu
-	            });
-	
-	            beamsClient.start()
-	                .then(() => beamsClient.addDeviceInterest('hello'))
-	                .then(() => console.log('Pusher Beams inicializado e interesse adicionado!'))
-	                .catch(error => {
-	                    console.error('Falha ao inicializar Pusher Beams:', error);
-	                    alert('Erro ao inicializar notificações.');
-	                });
-	        } else {
-	            console.error('Service Worker Registration não fornecido para Beams.');
-	            alert('As notificações não podem ser ativadas. Falta o registro do Service Worker.');
-	        }
-	
-	    } else {
-	        console.warn('Pusher Beams SDK não carregado ou não inicializado corretamente.');
-	        alert('As notificações não podem ser ativadas. Recarregue a página ou tente em outro navegador.');
-	    }
-	
-	    // Opcional: Pedir permissão de notificação diretamente aqui,
-	    // embora o BeamsClient.start() geralmente já faça isso.
-	    if ('Notification' in window && Notification.permission !== 'granted') {
-	        Notification.requestPermission().then(function(permission) {
-	            if (permission === 'granted') {
-	                console.log('Permissão de notificação concedida.');
-	            } else {
-	                console.warn('Permissão de notificação negada.');
-	            }
-	        });
-	    }
-	}
-	    
-	// ==========================================================
-	// REGISTRO DO SERVICE WORKER PARA NOTIFICAÇÕES
-	// ==========================================================   
-	function registerServiceWorkerAndInitializeBeams() {
-	    if ('serviceWorker' in navigator) {
-	        navigator.serviceWorker.register('/pomodorus/firebase-messaging-sw.js')
-	            .then((registration) => {
-	                console.log('Service Worker registrado com sucesso:', registration);
-	                alert('Service Worker registrado com sucesso:');
-	                requestNotificationPermissionAndInitializeBeams(registration);
-	            })
-	            .catch((error) => {
-	                console.error('Falha no registro do Service Worker:', error);
-	                alert('Falha no registro do Service Worker:');
-	            });
-	    } else {
-	        console.warn('Este navegador não suporta Service Workers para notificações push.');
-	        alert('Seu navegador não suporta notificações push.');
-	    }
-	}
+
+        // ==========================================================
+        // TOCAR AUDIO PARA MANTER ATIVIDADE DA PAGINA:
+        // ==========================================================
+        function startBackgroundActivity() {
+            manageGistButton.addEventListener('click', () => {
+            	silentAudio.loop = true;
+                silentAudio.play()
+                    .then(() => {
+                        appendLog("Áudio silencioso iniciado (loop).", "success");
+                    })
+                    .catch(error => {
+                        // This catch block handles cases where autoplay is blocked
+                        appendLog(`Erro ao iniciar áudio: ${error.message}. Isso pode ocorrer se o navegador bloquear o autoplay sem interação.`, "error");
+                    });
+            });
+        }
+        
+        // ==========================================================
+        // INICIALIZAR O CLIENTE PUSHER BEAMS:
+        // ==========================================================
+
+        // lembre de incluir o SDK do Beams cliente NO <head>
+        function requestNotificationPermissionAndInitializeBeams(swRegistration) { // swRegistration já vem aqui!
+            // Verifique se o PusherBeams SDK foi carregado
+            if (typeof PusherPushNotifications !== 'undefined' && PusherPushNotifications.Client) {
+                // NÃO PRECISA do navigator.serviceWorker.getRegistration() AQUI
+                // Porque o swRegistration já foi passado como parâmetro da função
+
+                if (swRegistration) { // Verifique se o registration foi passado corretamente
+                    const beamsClient = new PusherPushNotifications.Client({
+                        instanceId: '817d3c15-5b04-4da3-ae94-eaee8b489330',
+                        serviceWorkerRegistration: swRegistration, // Use o parâmetro que você recebeu
+                    });
+
+                    beamsClient.start()
+                        .then(() => beamsClient.addDeviceInterest('hello'))
+                        .then(() => console.log('Pusher Beams inicializado e interesse adicionado!'))
+                        .catch(error => {
+                            console.error('Falha ao inicializar Pusher Beams:', error);
+                            alert('Erro ao inicializar notificações.');
+                        });
+                } else {
+                    console.error('Service Worker Registration não fornecido para Beams.');
+                    alert('As notificações não podem ser ativadas. Falta o registro do Service Worker.');
+                }
+
+            } else {
+                console.warn('Pusher Beams SDK não carregado ou não inicializado corretamente.');
+                alert('As notificações não podem ser ativadas. Recarregue a página ou tente em outro navegador.');
+            }
+
+            // Opcional: Pedir permissão de notificação diretamente aqui,
+            // embora o BeamsClient.start() geralmente já faça isso.
+            if ('Notification' in window && Notification.permission !== 'granted') {
+                Notification.requestPermission().then(function(permission) {
+                    if (permission === 'granted') {
+                        console.log('Permissão de notificação concedida.');
+                    } else {
+                        console.warn('Permissão de notificação negada.');
+                    }
+                });
+            }
+        }
+
+        // ==========================================================
+        // REGISTRO DO SERVICE WORKER PARA NOTIFICAÇÕES
+        // ==========================================================   
+        function registerServiceWorkerAndInitializeBeams() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/pomodorus/firebase-messaging-sw.js')
+                    .then((registration) => {
+                        console.log('Service Worker registrado com sucesso:', registration);
+                        alert('Service Worker registrado com sucesso:');
+                        requestNotificationPermissionAndInitializeBeams(registration);
+                    })
+                    .catch((error) => {
+                        console.error('Falha no registro do Service Worker:', error);
+                        alert('Falha no registro do Service Worker:');
+                    });
+            } else {
+                console.warn('Este navegador não suporta Service Workers para notificações push.');
+                alert('Seu navegador não suporta notificações push.');
+            }
+        }
 
         // ==========================================================
         // --- FUNÇÃO PARA ENVIAR NOTIFICAÇÃO VIA APPWRITE ---
         // ==========================================================
-	async function sendNotificationViaAppwrite() {
-	    try {
-	        alert('Enviando notificação via Appwrite...');
-	        // Verifica se o objeto appwriteFunctions foi inicializado
-	        if (!appwriteFunctions) {
-	            console.error('Appwrite Functions não está inicializado. Verifique a inicialização do SDK.');
-	            alert('Erro: Serviço de notificação não pronto. Tente recarregar a página.');
-	            return;
-	        }
-	
-	        const result = await appwriteFunctions.createExecution(
-	            '686bda4600244b6e4296', // **SEU ID DA FUNÇÃO APPWRITE** - Este é o ID da sua função 'sendBeamsNotification'
-	            JSON.stringify({
-	                title: "Pomodorus Alert!",
-	                body: "Seu bloco de foco terminou. Hora do descanso!"
-	                // Você pode adicionar outros dados aqui que sua função Appwrite espera
-	                // Exemplo: 'user_id': 'ID_DO_USUARIO_ATUAL'
-	            })
-	        );
-	
-	        console.log('Appwrite Function executada com sucesso:', result);
-	        alert('Notificação solicitada via Appwrite!');
-	    } catch (error) {
-	        console.error('Erro ao chamar a Função Appwrite:', error);
-	        // Exibe uma mensagem de erro mais detalhada para o usuário
-	        alert(`Falha ao enviar notificação via Appwrite. Detalhes: ${error.message || 'Erro desconhecido.'}. Verifique o console para mais informações.`);
-	    }
-	}
-	
-	
-	// --- FUNÇÃO PARA INICIALIZAR APPWRITE E OS LISTENERS DOS BOTÕES ---
-	function initializeAppwriteAndButtons() {
-	    if (typeof Appwrite !== 'undefined') {
-	        const { Client, Functions } = Appwrite;
-	        appwriteClient = new Client();
-	        appwriteClient
-	            .setEndpoint('https://nyc.cloud.appwrite.io/v1') // Seu endpoint do Appwrite
-	            .setProject('686a67d5003a1b4b1bf9'); // Seu Project ID do Appwrite
-	
-	        appwriteFunctions = new Functions(appwriteClient);
-	
-	        const sendAppwriteNotificationButton = document.getElementById('sendAppwriteNotification');
-	        if (sendAppwriteNotificationButton) {
-	            // **AQUI CHAMAMOS A FUNÇÃO sendNotificationViaAppwrite NO CLIQUE**
-	            sendAppwriteNotificationButton.addEventListener('click', sendNotificationViaAppwrite);
-	        } else {
-	            console.warn('O botão de enviar notificação do Appwrite não foi encontrado.');
-	        }
-	
-	        // --- Lógica do botão de Notificação Local (se ainda estiver usando) ---
-	        const testNotificationButton = document.getElementById('testNotificationButton');
-	        if (testNotificationButton) {
-	            testNotificationButton.addEventListener('click', () => {
-	                if ('Notification' in window) {
-	                    if (Notification.permission === 'granted') {
-	                        alert('Permissão de notificação concedida! O dispositivo está pronto para receber notificações push.');
-	                        console.log('Dispositivo pronto para receber notificações push.');
-	                    } else if (Notification.permission === 'denied') {
-	                        alert('Permissão de notificação negada. Você precisa permiti-las nas configurações do navegador.');
-	                        console.warn('Permissão de notificação negada.');
-	                    } else {
-	                        alert('Permissão de notificação ainda não concedida. Por favor, aceite a solicitação.');
-	                    }
-	                } else {
-	                    alert('Seu navegador não suporta a API de Notificações.');
-	                    console.warn('API de Notificações não suportada.');
-	                }
-	            });
-	        }
-	
-	    } else {
-	        console.error('SDK do Appwrite não carregado. Verifique a tag script no HTML.');
-	    }
-	}
+        async function sendNotificationViaAppwrite() {
+            try {
+                alert('Enviando notificação via Appwrite...');
+                // Verifica se o objeto appwriteFunctions foi inicializado
+                if (!appwriteFunctions) {
+                    console.error('Appwrite Functions não está inicializado. Verifique a inicialização do SDK.');
+                    alert('Erro: Serviço de notificação não pronto. Tente recarregar a página.');
+                    return;
+                }
+
+                const result = await appwriteFunctions.createExecution(
+                    '686bda4600244b6e4296', // **SEU ID DA FUNÇÃO APPWRITE** - Este é o ID da sua função 'sendBeamsNotification'
+                    JSON.stringify({
+                        title: "Pomodorus Alert!",
+                        body: "Seu bloco de foco terminou. Hora do descanso!"
+                        // Você pode adicionar outros dados aqui que sua função Appwrite espera
+                        // Exemplo: 'user_id': 'ID_DO_USUARIO_ATUAL'
+                    })
+                );
+
+                console.log('Appwrite Function executada com sucesso:', result);
+                alert('Notificação solicitada via Appwrite!');
+            } catch (error) {
+                console.error('Erro ao chamar a Função Appwrite:', error);
+                // Exibe uma mensagem de erro mais detalhada para o usuário
+                alert(`Falha ao enviar notificação via Appwrite. Detalhes: ${error.message || 'Erro desconhecido.'}. Verifique o console para mais informações.`);
+            }
+        }
+        
+        // --- FUNÇÃO PARA INICIALIZAR APPWRITE E OS LISTENERS DOS BOTÕES ---
+        function initializeAppwriteAndButtons() {
+            if (typeof Appwrite !== 'undefined') {
+                const { Client, Functions } = Appwrite;
+                appwriteClient = new Client();
+                appwriteClient
+                    .setEndpoint('https://nyc.cloud.appwrite.io/v1') // Seu endpoint do Appwrite
+                    .setProject('686a67d5003a1b4b1bf9'); // Seu Project ID do Appwrite
+
+                appwriteFunctions = new Functions(appwriteClient);
+
+                const sendAppwriteNotificationButton = document.getElementById('sendAppwriteNotification');
+                if (sendAppwriteNotificationButton) {
+                    // **AQUI CHAMAMOS A FUNÇÃO sendNotificationViaAppwrite NO CLIQUE**
+                    sendAppwriteNotificationButton.addEventListener('click', sendNotificationViaAppwrite);
+                } else {
+                    console.warn('O botão de enviar notificação do Appwrite não foi encontrado.');
+                }
+
+                // --- Lógica do botão de Notificação Local (se ainda estiver usando) ---
+                const testNotificationButton = document.getElementById('testNotificationButton');
+                if (testNotificationButton) {
+                    testNotificationButton.addEventListener('click', () => {
+                        if ('Notification' in window) {
+                            if (Notification.permission === 'granted') {
+                                alert('Permissão de notificação concedida! O dispositivo está pronto para receber notificações push.');
+                                console.log('Dispositivo pronto para receber notificações push.');
+                            } else if (Notification.permission === 'denied') {
+                                alert('Permissão de notificação negada. Você precisa permiti-las nas configurações do navegador.');
+                                console.warn('Permissão de notificação negada.');
+                            } else {
+                                alert('Permissão de notificação ainda não concedida. Por favor, aceite a solicitação.');
+                            }
+                        } else {
+                            alert('Seu navegador não suporta a API de Notificações.');
+                            console.warn('API de Notificações não suportada.');
+                        }
+                    });
+                }
+
+            } else {
+                console.error('SDK do Appwrite não carregado. Verifique a tag script no HTML.');
+            }
+        }
 
         // ==========================================================
         // INICIALIZAÇÃO GERAL
@@ -1758,14 +1777,15 @@
 
         // CHAME A FUNÇÃO AQUI para verificar as credenciais ao carregar a página
         document.addEventListener('DOMContentLoaded', () => {
-            checkGistCredentials();
-            updatePausesListUI(); // Garante que a lista de pausas é renderizada ao carregar
-            showWelcomeNotification();
             // Chamada para exibir a primeira mensagem de orientação
-	    showStatusMessage("Lembre-se de permitir as notificações de aplicativos no seu sistema operacional.<br><br>Notificações podem não funcionar em navegações anônimas.", false);
+	    	showStatusMessage("Lembre-se de permitir as notificações de aplicativos no seu sistema operacional.<br><br>Notificações podem não funcionar em navegações anônimas.", false);
+            
+            checkGistCredentials();
+            updatePausesListUI(); // Lista de pausas é renderizada ao carregar
+            showWelcomeNotification();
             registerServiceWorkerAndInitializeBeams()
-	    initializeAppwriteAndButtons();
-	});
+	    	initializeAppwriteAndButtons();
+		});
     </script>
 </body>
 </html>
