@@ -421,7 +421,16 @@
             text-align: center;
         }
 
-        /* Ajuste para o volume */
+        /* --- Ajuste para o volume --- */
+        .volume-container {
+            position: relative;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
         .volume-button {
             background-color: #007bff;
             color: white;
@@ -523,16 +532,28 @@
             transform: translateX(16px);
         }
 
+        /* --- Início das Correções para Centralização --- */
+
         .volume-slider-container {
+            /* Define este container como flex para alinhar seus filhos (volume-adjust-buttons) */
             display: flex;
-            align-items: center;
-            gap: 10px;
+            justify-content: center; /* Centraliza a div volume-adjust-buttons horizontalmente */
+            align-items: center; /* Alinha verticalmente se houver diferença de altura */
             width: 100%;
-            max-width: 250px;
+            max-width: 300px; /* Define uma largura máxima para o conjunto slider + botões */
+            margin: 0 auto; /* Centraliza o volume-slider-container dentro de seu pai */
+        }
+
+        .volume-adjust-buttons {
+            /* Transforma esta div em um flex container para seus próprios filhos (botões e slider) */
+            display: flex;
+            align-items: center; /* Alinha os botões e o slider verticalmente */
+            gap: 10px; /* Espaçamento entre os elementos (botão -, slider, botão +) */
+            width: 100%; /* Garante que ela ocupe a largura total do volume-slider-container */
         }
 
         .volume-slider {
-            width: 100%;
+            flex-grow: 1; /* Permite que o slider ocupe o espaço restante, centralizando-se */
             -webkit-appearance: none;
             height: 8px;
             border-radius: 5px;
@@ -561,21 +582,20 @@
             cursor: pointer;
         }
 
-        .volume-adjust-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
         .volume-adjust-buttons button {
+            /* Estilos para os botões - e + (agora com ícones) */
             background-color: #6c757d;
             color: white;
             border: none;
             border-radius: 5px;
-            width: 40px;
-            height: 40px;
+            width: 40px; /* Largura para os botões */
+            height: 40px; /* Altura para os botões */
             font-size: 20px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            display: flex; /* Para centralizar o ícone dentro do botão */
+            justify-content: center;
+            align-items: center;
         }
 
         .volume-adjust-buttons button:hover {
@@ -935,15 +955,17 @@
                 </div>
 
                 <div class="volume-slider-container">
-                    <i class="material-icons">volume_mute</i>
-                    <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="50">
-                    <i class="material-icons">volume_up</i>
+                  <div class="volume-adjust-buttons">
+                      <button id="volumeDown"><i class="material-icons">
+                      volume_mute
+                      </i></button>
+                      <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="50">
+                      <button id="volumeUp"><i class="material-icons">
+                      volume_up
+                      </i></button>
+                  </div>
                 </div>
-
-                <div class="volume-adjust-buttons">
-                    <button id="volumeDown">-</button>
-                    <button id="volumeUp">+</button>
-                </div>
+                
             </div>
         </div>
         
@@ -1895,31 +1917,35 @@
         });
 
         // Volume slider functionality
-        volumeSlider.addEventListener('input', () => {
+        volumeSlider.addEventListener('input', () => { 
             currentVolume = parseInt(volumeSlider.value);
-            muteToggle.checked = currentVolume === 0; // Mute if slider is at 0
+            muteToggle.checked = currentVolume === 0; // Mute if slider is at 0       
+        	silentAudio.volume = parseInt(volumeSlider.value) / 100;
             updateVolumeIcon();
         });
 
         // Volume down button
-        volumeDownButton.addEventListener('click', () => {
-            if (currentVolume > 0) {
-                currentVolume = Math.max(0, currentVolume - 10); // Decrease by 10, min 0
-                volumeSlider.value = currentVolume;
-                muteToggle.checked = currentVolume === 0;
-                updateVolumeIcon();
-            }
-        });
+        volumeDownButton.addEventListener('click', () => {
+            if (currentVolume > 0) {
+                currentVolume = Math.max(0, currentVolume - 10); // Decrease by 10, min 0
+                volumeSlider.value = currentVolume;
+                silentAudio.volume = currentVolume / 100; // ADICIONE ESTA LINHA
+                muteToggle.checked = currentVolume === 0;
+                updateVolumeIcon();
+            }
+        });
 
-        // Volume up button
-        volumeUpButton.addEventListener('click', () => {
-            if (currentVolume < 100) {
-                currentVolume = Math.min(100, currentVolume + 10); // Increase by 10, max 100
-                volumeSlider.value = currentVolume;
-                muteToggle.checked = false; // Unmute if increasing volume
-                updateVolumeIcon();
-            }
-        });
+        // Volume up button
+        volumeUpButton.addEventListener('click', () => {
+			silentAudio.muted = false;
+            if (currentVolume < 100) {
+                currentVolume = Math.min(100, currentVolume + 10); // Increase by 10, max 100
+                volumeSlider.value = currentVolume;
+                silentAudio.volume = currentVolume / 100; // ADICIONE ESTA LINHA
+                muteToggle.checked = false; // Unmute if increasing volume
+                updateVolumeIcon();
+            }
+        });
 
         // ==========================================================
         // INICIALIZAR O CLIENTE PUSHER BEAMS:
