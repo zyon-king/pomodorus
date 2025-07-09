@@ -899,6 +899,8 @@
         const silentAudio = new Audio('https://raw.githubusercontent.com/w3teal/awesome-ringtone/main/Google%20Pixel/2021%20-%20Your%20New%20Adventure.mp3');
         const notificationSound = new Audio('https://files.catbox.moe/1f75z8.mp3'); // Certifique-se de ter um arquivo notification.mp3
         const alarmDisplay = document.getElementById('alarmDisplay'); // Elemento para mensagens de status
+        const muteUnmuteBtn = document.getElementById('mute-unmute-btn');
+        const volumeSlider = document.getElementById('volume-slider');
 
         // Variáveis temporárias para a configuração da nova pausa via modal
         let tempPauseStartHour = 0;
@@ -1715,7 +1717,6 @@
             const notificationTitle = "Pomodorus"; // O título que aparecerá na notificação
             // Set audio to loop
             silentAudio.loop = true;
-            silentAudio.muted = true;
 
             // Attempt to play audio
             silentAudio.play()
@@ -1731,16 +1732,38 @@
                 });          
             new Notification(notificationTitle, { body: message });
         }
-        
-        function muteAudio(audioElement) {
-            if (audioElement) {
-                audioElement.muted = true;
-                console.log("Áudio mutado.");
-            } else {
-                console.warn("Elemento de áudio não fornecido ou inválido.");
-            }
-        }
+		
+        // Mute/Unmute
+        muteUnmuteBtn.addEventListener('click', () => {
+            silentAudio.muted = !silentAudio.muted; // Changed from audioPlayer to silentAudio
+            muteUnmuteBtn.innerHTML = silentAudio.muted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+            // Quando mutar/desmutar, atualiza o slider para refletir o estado
+            volumeSlider.value = silentAudio.muted ? 0 : silentAudio.volume; // Changed from audioPlayer to silentAudio
+        });
 
+        // Controlar o volume com o slider
+        volumeSlider.addEventListener('input', () => {
+            silentAudio.volume = volumeSlider.value; // Changed from audioPlayer to silentAudio
+            // Se o volume for 0, muda o ícone para mudo
+            if (silentAudio.volume === 0) { // Changed from audioPlayer to silentAudio
+                muteUnmuteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                silentAudio.muted = true; // Garante que o player está marcado como mutado // Changed from audioPlayer to silentAudio
+            } else {
+                muteUnmuteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                silentAudio.muted = false; // Garante que o player não está marcado como mutado // Changed from audioPlayer to silentAudio
+            }
+        });
+
+        // Sincronizar slider com o volume do player se for alterado por outros meios (ex: teclas do sistema)
+        silentAudio.addEventListener('volumechange', () => { // Changed from audioPlayer to silentAudio
+            volumeSlider.value = silentAudio.volume; // Changed from audioPlayer to silentAudio
+            if (silentAudio.muted || silentAudio.volume === 0) { // Changed from audioPlayer to silentAudio
+                muteUnmuteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+            } else {
+                muteUnmuteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+            }
+        });
+        
         // ==========================================================
         // INICIALIZAR O CLIENTE PUSHER BEAMS:
         // ==========================================================
