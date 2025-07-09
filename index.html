@@ -77,29 +77,31 @@
         h1 {
             margin-bottom: 5px;
             font-size: 1.5em;
-        }        
+        }
+        
+        .header-content {
+            /* Add these three lines for Flexbox layout */
+            display: flex;
+            justify-content: space-between; /* Distributes items with space between them */
+            align-items: center; /* Vertically centers items */
+
+            /* For example, if you had a background or padding on header-content */
+            width: 95%; /* Ensure it takes full width to allow space-between to work */
+            margin-bottom: 1px; /* Space below the header content */
+        }
         
         .time-display {
-            backdrop-filter: blur(10px); /* Efeito de desfoque */
+            backdrop-filter: blur(10px);
             border-radius: 8px;
-            z-index: 10; /* Garante que fique acima de outros elementos */
-            animation: fadeInScale 1s ease-out; /* Animação de entrada */
-                        
-            padding: 0.6vh 1.5vw; /* Padding responsivo para o quadro */
-            /* --- POSICIONAMENTO PARA O CANTO SUPERIOR DIREITO --- */
-            position: relative; /* Posição absoluta em relação ao body */
-            margin-left: 75%; /* Distância da direita */
-            transform: none; /* Remove qualquer transformação indesejada de centralização */
+            z-index: 10;
+            animation: fadeInScale 1s ease-out;
+            padding: 0.6vh 1.5vw;
         }
         
         .volume-control-container {
-            position: absolute; /* Add this line */
-            top: 14%; /* Adjust this value as needed for vertical spacing */
-            left: 22%; /* Adjust this value as needed for horizontal spacing */
-            /* The existing display: flex and align-items: center are fine to keep */
-            display: flex;
+        	display: flex;
             align-items: center;
-            z-index: 10; /* Ensures it stays on top of other elements */
+            z-index: 10;
         }
         
         .volume-control-btn {
@@ -112,8 +114,8 @@
             box-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
 
             /* --- Changes for smaller size --- */
-            width: 35px; /* Adjust as needed */
-            height: 35px; /* Adjust as needed */
+            width: 30px; /* Adjust as needed */
+            height: 30px; /* Adjust as needed */
             padding: 0; /* Remove padding if setting fixed width/height */
             display: flex; /* To center the icon if using fixed dimensions */
             justify-content: center;
@@ -124,7 +126,7 @@
         #volume-slider {
             /* Estilos básicos para o slider */
             width: 0px; /* Inicialmente oculto */
-            height: 8px;
+            height: 6px;
             appearance: none;
             background: #3e3e5c;
             border-radius: 5px;
@@ -680,17 +682,17 @@
     <div id="particle-container"></div>  
     
     <div class="alarm-container">
+    
+    	<!-- Novo contêiner para o cabeçalho -->
+        <div class="header-content">        
         
 			<div class="volume-control-container"> 
             	<button id="mute-unmute-btn" class="volume-control-btn">
                 	<i class="fas fa-volume-up"></i></button>
 				<input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
-            </div>
-    
-    	<!-- Novo contêiner para o cabeçalho -->
-        <div class="header-content">
-            
+            </div>            
             <div id="clock" class="time-display"></div>
+            
         </div>
         	
 		<h1>꧁My Pomodorus꧂</h1>
@@ -1711,12 +1713,10 @@
 
         // ==========================================================
         // TOCAR AUDIO PARA MANTER ATIVIDADE DA PAGINA:
-        // ==========================================================
+        // ========================================================== 
         function startBackgroundActivity() {
             const message = "A atividade em segundo plano foi iniciada com sucesso.";
             const notificationTitle = "Pomodorus"; // O título que aparecerá na notificação
-            // Set audio to loop
-            silentAudio.loop = true;
 
             // Attempt to play audio
             silentAudio.play()
@@ -1732,6 +1732,20 @@
                 });          
             new Notification(notificationTitle, { body: message });
         }
+        
+        // Rewind to the beginning
+        silentAudio.addEventListener('ended', () => {
+            silentAudio.currentTime = 0; // Volta para o início
+            silentAudio.play()          // Toca novamente
+                .then(() => {
+                    console.log('Áudio terminou e foi reiniciado por silentAudio.addEventListener().');
+                    // Você pode adicionar um appendLog aqui se quiser registrar cada reinício
+                })
+                .catch(error => {
+                    console.error('Erro ao reiniciar áudio manualmente:', error.message);
+                    appendLog(`Erro ao reiniciar áudio: ${error.message}.`, "error");
+                });
+        });
 		
         // Mute/Unmute
         muteUnmuteBtn.addEventListener('click', () => {
