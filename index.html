@@ -97,51 +97,78 @@
             animation: fadeInScale 1s ease-out;
             padding: 0.6vh 1.5vw;
         }
-        
-        /* ... volume-control ... */
+        /* --- volume-control --- */
         .volume-control-container {
-            position: relative; /* Para posicionar o slider em relação a este container */
-            display: flex;
+            position: relative;
+            display: flex; /* Keep as flex to align items */
             align-items: center;
-            gap: 10px; /* Espaço entre o botão e o slider */
+            gap: 10px; /* Space between the mute button, plus/minus and slider */
+        }
+        
+        .volume-buttons {
+            display: flex; /* Arrange plus/minus buttons horizontally */
+            gap: 5px; /* Space between plus and minus buttons */
+            /* Initially hidden and off-screen */
+            opacity: 0;
+            transform: translateX(-20px); /* Move left to hide */
+            pointer-events: none; /* Prevent clicks when invisible */
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+        
+        /* When the volume container is active, show the buttons */
+        .volume-control-container.active .volume-buttons {
+            opacity: 1;
+            transform: translateX(0); /* Return to original position */
+            pointer-events: auto; /* Allow clicks */
         }
         
         .volume-control-btn {
-        	background-color: #00a3cc; /* Azul neon */
+            background-color: #00a3cc;
             border: none;
             color: #fff;
             cursor: pointer;
             box-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
-
-            /* --- Changes for smaller size --- */
-            width: 45px; /* Adjust as needed */
-            height: 45px; /* Adjust as needed */
-            padding: 0; /* Remove padding if setting fixed width/height */
-            display: flex; /* To center the icon if using fixed dimensions */
+            width: 45px;
+            height: 45px;
+            padding: 0;
+            display: flex;
             justify-content: center;
             align-items: center;
-            border-radius: 50%; /* Make it round if you prefer */
+            border-radius: 50%;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
         }
         
         .volume-control-btn:hover {
-        	background-color: #00a3cc; /* Azul neon */
+            background-color: #008fb2;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.8);
         }
-
+        
+        .volume-action-btn {
+            font-size: 1.2em;
+        }
+        
         #volume-slider {
-            /* Estilos básicos para o slider */
-            width: 0px; /* Inicialmente oculto */
+            width: 0px; /* Initially hidden */
             height: 8px;
-            -webkit-appearance: none; /* Remove estilos padrão do navegador */
+            -webkit-appearance: none;
             appearance: none;
             background: #3e3e5c;
             box-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
             border-radius: 5px;
             outline: none;
-            opacity: 0; /* Começa invisível */
-            transition: width 0.3s ease-out, opacity 0.3s ease-out; /* Transição suave */
+            opacity: 0; /* Start invisible */
+            pointer-events: none; /* Prevent interaction when invisible */
+            transition: width 0.3s ease-out, opacity 0.3s ease-out; /* Smooth transition */
             cursor: pointer;
         }
-
+        
+        /* When the volume container is active, show the slider */
+        .volume-control-container.active #volume-slider {
+            width: 80px; /* Expanded width */
+            opacity: 1; /* Make visible */
+            pointer-events: auto; /* Allow interaction */
+        }
+        
         /* Estilizando o "thumb" (o círculo que você arrasta) do slider */
         #volume-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
@@ -179,11 +206,6 @@
             height: 8px;
         }
 
-        /* Mostra o slider ao passar o mouse sobre o container de volume */
-        .volume-control-container:hover #volume-slider {
-            width: 80px; /* Largura expandida ao passar o mouse */
-            opacity: 1; /* Torna visível */
-        }
         /* --- Regras para o Botão de Ação --- */
         button {
         	position: relative;
@@ -691,15 +713,17 @@
     <div class="alarm-container">
     
     	<!-- Novo contêiner para o cabeçalho -->
-        <div class="header-content">        
-        
-			<div class="volume-control-container"> 
-            	<button id="mute-unmute-btn" class="volume-control-btn">
-                	<i class="fas fa-volume-up"></i></button>
-				<input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
-            </div>            
+        <div class="header-content">
+            <div class="volume-control-container">
+                <div class="volume-buttons">
+                    <button id="volume-up-btn" class="volume-control-btn volume-action-btn"><i class="fas fa-plus"></i></button>
+                    <button id="volume-down-btn" class="volume-control-btn volume-action-btn"><i class="fas fa-minus"></i></button>
+                </div>
+                <button id="mute-unmute-btn" class="volume-control-btn">
+                    <i class="fas fa-volume-up"></i> </button>
+                <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+            </div>
             <div id="clock" class="time-display"></div>
-            
         </div>
         	
 		<h1>꧁My Pomodorus꧂</h1>
@@ -908,8 +932,19 @@
         const silentAudio = new Audio('https://raw.githubusercontent.com/w3teal/awesome-ringtone/main/Google%20Pixel/2021%20-%20Your%20New%20Adventure.mp3');
         const notificationSound = new Audio('https://files.catbox.moe/1f75z8.mp3'); // Certifique-se de ter um arquivo notification.mp3
         const alarmDisplay = document.getElementById('alarmDisplay'); // Elemento para mensagens de status
-        const muteUnmuteBtn = document.getElementById('mute-unmute-btn');
+        
+                
+        // Inicializa o volume
+        audio.volume = volumeSlider.value;
+        
+        const volumeControlContainer = document.querySelector('.volume-control-container');
         const volumeSlider = document.getElementById('volume-slider');
+        const muteUnmuteBtn = document.getElementById('mute-unmute-btn');
+        const volumeUpBtn = document.getElementById('volume-up-btn');
+        const volumeDownBtn = document.getElementById('volume-down-btn');
+        const muteIcon = muteUnmuteBtn.querySelector('i');
+        
+        let lastVolume = 1; // Para armazenar o volume antes de mutar
 
         // Variáveis temporárias para a configuração da nova pausa via modal
         let tempPauseStartHour = 0;
@@ -1742,6 +1777,7 @@
         
         // Rewind to the beginning
         silentAudio.addEventListener('ended', () => {
+            updateClockAndCheckPauses()
             silentAudio.currentTime = 0; // Volta para o início
             silentAudio.play()          // Toca novamente
                 .then(() => {
@@ -1753,37 +1789,66 @@
                     appendLog(`Erro ao reiniciar áudio: ${error.message}.`, "error");
                 });
         });
-		
-        // Mute/Unmute
-        muteUnmuteBtn.addEventListener('click', () => {
-            silentAudio.muted = !silentAudio.muted; // Changed from audioPlayer to silentAudio
-            muteUnmuteBtn.innerHTML = silentAudio.muted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
-            // Quando mutar/desmutar, atualiza o slider para refletir o estado
-            volumeSlider.value = silentAudio.muted ? 0 : silentAudio.volume; // Changed from audioPlayer to silentAudio
-        });
+// Evento de clique no botão de mudo/desmudo para alternar a visibilidade
+muteUnmuteBtn.addEventListener('click', () => {
+    volumeControlContainer.classList.toggle('active'); // Alterna a classe 'active'
 
-        // Controlar o volume com o slider
-        volumeSlider.addEventListener('input', () => {
-            silentAudio.volume = volumeSlider.value; // Changed from audioPlayer to silentAudio
-            // Se o volume for 0, muda o ícone para mudo
-            if (silentAudio.volume === 0) { // Changed from audioPlayer to silentAudio
-                muteUnmuteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
-                silentAudio.muted = true; // Garante que o player está marcado como mutado // Changed from audioPlayer to silentAudio
-            } else {
-                muteUnmuteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-                silentAudio.muted = false; // Garante que o player não está marcado como mutado // Changed from audioPlayer to silentAudio
-            }
-        });
+    // Lógica de mudo/desmudo existente
+   if (audio.volume > 0) {
+        lastVolume = audio.volume; // Salva o volume atual antes de mutar
+        audio.volume = 0;
+        volumeSlider.value = 0;
+        muteIcon.classList.remove('fa-volume-up');
+        muteIcon.classList.add('fa-volume-mute');
+    } else {
+        audio.volume = lastVolume > 0 ? lastVolume : 0.5; // Restaura ou define para 0.5
+        volumeSlider.value = audio.volume;
+        muteIcon.classList.remove('fa-volume-mute');
+        muteIcon.classList.add('fa-volume-up');
+    }
+});
 
-        // Sincronizar slider com o volume do player se for alterado por outros meios (ex: teclas do sistema)
-        silentAudio.addEventListener('volumechange', () => { // Changed from audioPlayer to silentAudio
-            volumeSlider.value = silentAudio.volume; // Changed from audioPlayer to silentAudio
-            if (silentAudio.muted || silentAudio.volume === 0) { // Changed from audioPlayer to silentAudio
-                muteUnmuteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
-            } else {
-                muteUnmuteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-            }
-        });
+// Evento de input do slider
+volumeSlider.addEventListener('input', () => {
+    audio.volume = volumeSlider.value;
+    if (audio.volume > 0) {
+        muteIcon.classList.remove('fa-volume-mute');
+        muteIcon.classList.add('fa-volume-up');
+        lastVolume = audio.volume; // Atualiza o último volume quando o slider é movido
+    } else {
+        muteIcon.classList.remove('fa-volume-up');
+        muteIcon.classList.add('fa-volume-mute');
+    }
+});
+
+// Evento de clique no botão de aumentar volume
+volumeUpBtn.addEventListener('click', () => {
+    let currentVolume = parseFloat(volumeSlider.value);
+    currentVolume = Math.min(1, currentVolume + 0.1); // Aumenta em 0.1, máximo 1
+    volumeSlider.value = currentVolume;
+    audio.volume = currentVolume;
+    if (currentVolume > 0) {
+        muteIcon.classList.remove('fa-volume-mute');
+        muteIcon.classList.add('fa-volume-up');
+        lastVolume = currentVolume;
+    }
+});
+
+// Evento de clique no botão de diminuir volume
+volumeDownBtn.addEventListener('click', () => {
+    let currentVolume = parseFloat(volumeSlider.value);
+    currentVolume = Math.max(0, currentVolume - 0.1); // Diminui em 0.1, mínimo 0
+    volumeSlider.value = currentVolume;
+    audio.volume = currentVolume;
+    if (currentVolume === 0) {
+        muteIcon.classList.remove('fa-volume-up');
+        muteIcon.classList.add('fa-volume-mute');
+    } else {
+        muteIcon.classList.remove('fa-volume-mute');
+        muteIcon.classList.add('fa-volume-up');
+        lastVolume = currentVolume;
+    }
+});
         
         // ==========================================================
         // INICIALIZAR O CLIENTE PUSHER BEAMS:
@@ -1947,4 +2012,4 @@
 		});
     </script>
 </body>
-</html>
+	</html>
