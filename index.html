@@ -98,37 +98,43 @@
             padding: 0.6vh 1.5vw;
         }
         
+        /* ... volume-control ... */
         .volume-control-container {
-        	display: flex;
+            position: relative; /* Para posicionar o slider em relação a este container */
+            display: flex;
             align-items: center;
-            z-index: 10;
+            gap: 10px; /* Espaço entre o botão e o slider */
         }
         
         .volume-control-btn {
-            /* Existing styles */
         	background-color: #00a3cc; /* Azul neon */
-            transition: background-color 0.3s ease;
             border: none;
             color: #fff;
             cursor: pointer;
             box-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
 
             /* --- Changes for smaller size --- */
-            width: 30px; /* Adjust as needed */
-            height: 30px; /* Adjust as needed */
+            width: 45px; /* Adjust as needed */
+            height: 45px; /* Adjust as needed */
             padding: 0; /* Remove padding if setting fixed width/height */
             display: flex; /* To center the icon if using fixed dimensions */
             justify-content: center;
             align-items: center;
             border-radius: 50%; /* Make it round if you prefer */
         }
+        
+        .volume-control-btn:hover {
+        	background-color: #00a3cc; /* Azul neon */
+        }
 
         #volume-slider {
             /* Estilos básicos para o slider */
             width: 0px; /* Inicialmente oculto */
-            height: 6px;
+            height: 8px;
+            -webkit-appearance: none; /* Remove estilos padrão do navegador */
             appearance: none;
             background: #3e3e5c;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
             border-radius: 5px;
             outline: none;
             opacity: 0; /* Começa invisível */
@@ -143,9 +149,10 @@
             width: 20px;
             height: 20px;
             background-color: #00a3cc;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+            box-shadow: 0 0 5px rgba(233, 69, 96, 0.5);
             margin-top: -6px; /* Ajusta a posição vertical do thumb */
         }
 
@@ -153,6 +160,7 @@
             width: 20px;
             height: 20px;
             background-color: #00a3cc;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
             border-radius: 50%;
             cursor: pointer;
             box-shadow: 0 0 5px rgba(233, 69, 96, 0.5);
@@ -171,15 +179,14 @@
             height: 8px;
         }
 
-
         /* Mostra o slider ao passar o mouse sobre o container de volume */
         .volume-control-container:hover #volume-slider {
             width: 80px; /* Largura expandida ao passar o mouse */
             opacity: 1; /* Torna visível */
         }
-
         /* --- Regras para o Botão de Ação --- */
         button {
+        	position: relative;
             padding: 15px 30px;
             font-size: 1.2em;
             color: #ffffff;
