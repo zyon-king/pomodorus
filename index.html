@@ -6,7 +6,7 @@
     <title>Pomodorus</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto+Mono:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
     <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/appwrite@17.0.0"></script>
@@ -75,140 +75,25 @@
         }
 
         h1 {
-            margin-bottom: 5px;
+            margin-bottom: 25px;
             font-size: 1.5em;
         }
-        
-        .header-content {
-            /* Add these three lines for Flexbox layout */
-            display: flex;
-            justify-content: space-between; /* Distributes items with space between them */
-            align-items: center; /* Vertically centers items */
 
-            /* For example, if you had a background or padding on header-content */
-            width: 95%; /* Ensure it takes full width to allow space-between to work */
-            margin-bottom: 1px; /* Space below the header content */
-        }
-        
         .time-display {
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px); /* Efeito de desfoque */
             border-radius: 8px;
-            z-index: 10;
-            animation: fadeInScale 1s ease-out;
-            padding: 0.6vh 1.5vw;
-        }
-        /* --- volume-control --- */
-        .volume-control-container {
-            position: relative;
-            display: flex; /* Keep as flex to align items */
-            align-items: center;
-            gap: 10px; /* Space between the mute button, plus/minus and slider */
-        }
-        
-        .volume-buttons {
-            display: flex; /* Arrange plus/minus buttons horizontally */
-            gap: 5px; /* Space between plus and minus buttons */
-            /* Initially hidden and off-screen */
-            opacity: 0;
-            transform: translateX(-20px); /* Move left to hide */
-            pointer-events: none; /* Prevent clicks when invisible */
-            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-        }
-        
-        /* When the volume container is active, show the buttons */
-        .volume-control-container.active .volume-buttons {
-            opacity: 1;
-            transform: translateX(0); /* Return to original position */
-            pointer-events: auto; /* Allow clicks */
-        }
-        
-        .volume-control-btn {
-            background-color: #00a3cc;
-            border: none;
-            color: #fff;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
-            width: 45px;
-            height: 45px;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 50%;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        
-        .volume-control-btn:hover {
-            background-color: #008fb2;
-            box-shadow: 0 0 15px rgba(0, 255, 204, 0.8);
-        }
-        
-        .volume-action-btn {
-            font-size: 1.2em;
-        }
-        
-        #volume-slider {
-            width: 0px; /* Initially hidden */
-            height: 8px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: #3e3e5c;
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
-            border-radius: 5px;
-            outline: none;
-            opacity: 0; /* Start invisible */
-            pointer-events: none; /* Prevent interaction when invisible */
-            transition: width 0.3s ease-out, opacity 0.3s ease-out; /* Smooth transition */
-            cursor: pointer;
-        }
-        
-        /* When the volume container is active, show the slider */
-        .volume-control-container.active #volume-slider {
-            width: 80px; /* Expanded width */
-            opacity: 1; /* Make visible */
-            pointer-events: auto; /* Allow interaction */
-        }
-        
-        /* Estilizando o "thumb" (o círculo que você arrasta) do slider */
-        #volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background-color: #00a3cc;
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 5px rgba(233, 69, 96, 0.5);
-            margin-top: -6px; /* Ajusta a posição vertical do thumb */
-        }
-
-        #volume-slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background-color: #00a3cc;
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 5px rgba(233, 69, 96, 0.5);
-        }
-
-        /* Estilos para a barra de preenchimento (lado esquerdo do thumb) */
-        #volume-slider::-webkit-slider-runnable-track {
-            background: #3e3e5c;
-            border-radius: 5px;
-            height: 8px;
-        }
-
-        #volume-slider::-moz-range-track {
-            background: #3e3e5c;
-            border-radius: 5px;
-            height: 8px;
+            z-index: 10; /* Garante que fique acima de outros elementos */
+            animation: fadeInScale 1s ease-out; /* Animação de entrada */
+                        
+            padding: 0.6vh 1.5vw; /* Padding responsivo para o quadro */
+            /* --- POSICIONAMENTO PARA O CANTO SUPERIOR DIREITO --- */
+            position: relative; /* Posição absoluta em relação ao body */
+            margin-left: 75%; /* Distância da direita */
+            transform: none; /* Remove qualquer transformação indesejada de centralização */
         }
 
         /* --- Regras para o Botão de Ação --- */
         button {
-        	position: relative;
             padding: 15px 30px;
             font-size: 1.2em;
             color: #ffffff;
@@ -527,7 +412,175 @@
         .config-modal-content .carousel-container {
             margin: 5px; /* Espaçamento menor dentro do modal */
         }
+		        .volume-container {
+            position: relative;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
 
+        /* Ajuste para o volume */
+        .volume-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        .volume-button:hover {
+            background-color: #0056b3;
+        }
+
+        .volume-controls {
+            display: none;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            animation: fadeIn 0.3s ease-in-out forwards;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .volume-controls.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mute-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(16px);
+            -ms-transform: translateX(16px);
+            transform: translateX(16px);
+        }
+
+        .volume-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .volume-slider {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+        }
+
+        .volume-adjust-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .volume-adjust-buttons button {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .volume-adjust-buttons button:hover {
+            background-color: #5a6268;
+        }
 
         /* --- Seção de Pausas Ativas --- */
         #active-pauses-section {
@@ -713,23 +766,12 @@
     <div class="alarm-container">
     
     	<!-- Novo contêiner para o cabeçalho -->
-        <div class="header-content">
-            <div class="volume-control-container">
-                <div class="volume-buttons">
-                    <button id="volume-up-btn" class="volume-control-btn volume-action-btn"><i class="fas fa-plus"></i></button>
-                    <button id="volume-down-btn" class="volume-control-btn volume-action-btn"><i class="fas fa-minus"></i></button>
-                </div>
-                <button id="mute-unmute-btn" class="volume-control-btn">
-                    <i class="fas fa-volume-up"></i> </button>
-                <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
-            </div>
+        <div class="header-content">    
             <div id="clock" class="time-display"></div>
+            <h1>My Pomodorus</h1>    
         </div>
-        	
-		<h1>꧁My Pomodorus꧂</h1>
 
         <div class="form-group">
-            
             <div class="section-title">Configurar Nova Pausa:</div>
             
             <button id="openPauseConfigModalButton">Iniciar Configuração</button>
@@ -877,6 +919,34 @@
     </div>
 
     <div class="gist-modal-overlay" id="gist-config-modal">
+    	
+        <div class="volume-container">
+            <button id="volumeButton" class="volume-button">
+                <i class="material-icons">volume_up</i>
+            </button>
+
+            <div id="volumeControls" class="volume-controls">
+                <div class="mute-switch">
+                    <span>Mudo</span>
+                    <label class="switch">
+                        <input type="checkbox" id="muteToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="volume-slider-container">
+                    <i class="material-icons">volume_mute</i>
+                    <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="50">
+                    <i class="material-icons">volume_up</i>
+                </div>
+
+                <div class="volume-adjust-buttons">
+                    <button id="volumeDown">-</button>
+                    <button id="volumeUp">+</button>
+                </div>
+            </div>
+        </div>
+        
         <div class="gist-modal-content">
             <h3>Configurar Gist do GitHub</h3>
             <p>Para carregar ou salvar pausas com repetição diária, forneça seu Token de Acesso Pessoal (PAT) do GitHub e o ID do Gist.</p>
@@ -901,8 +971,7 @@
         // ==========================================================
         // Função para criar as partículas de fundo
         // ==========================================================        
-        /*
-	function createParticles() {
+        function createParticles() {
             const numParticles = 60;
             const container = document.getElementById('particle-container');
 
@@ -919,7 +988,6 @@
         }
 
         createParticles();
-	*/
     
         // --- COMEÇO DO BLOCO DE ACRÉSCIMO/SUBSTITUIÇÃO COMPLETA DO SCRIPT ---
 
@@ -932,19 +1000,6 @@
         const silentAudio = new Audio('https://raw.githubusercontent.com/w3teal/awesome-ringtone/main/Google%20Pixel/2021%20-%20Your%20New%20Adventure.mp3');
         const notificationSound = new Audio('https://files.catbox.moe/1f75z8.mp3'); // Certifique-se de ter um arquivo notification.mp3
         const alarmDisplay = document.getElementById('alarmDisplay'); // Elemento para mensagens de status
-        
-                
-        // Inicializa o volume
-        audio.volume = volumeSlider.value;
-        
-        const volumeControlContainer = document.querySelector('.volume-control-container');
-        const volumeSlider = document.getElementById('volume-slider');
-        const muteUnmuteBtn = document.getElementById('mute-unmute-btn');
-        const volumeUpBtn = document.getElementById('volume-up-btn');
-        const volumeDownBtn = document.getElementById('volume-down-btn');
-        const muteIcon = muteUnmuteBtn.querySelector('i');
-        
-        let lastVolume = 1; // Para armazenar o volume antes de mutar
 
         // Variáveis temporárias para a configuração da nova pausa via modal
         let tempPauseStartHour = 0;
@@ -1755,7 +1810,7 @@
 
         // ==========================================================
         // TOCAR AUDIO PARA MANTER ATIVIDADE DA PAGINA:
-        // ========================================================== 
+        // ==========================================================
         function startBackgroundActivity() {
             const message = "A atividade em segundo plano foi iniciada com sucesso.";
             const notificationTitle = "Pomodorus"; // O título que aparecerá na notificação
@@ -1789,67 +1844,83 @@
                     appendLog(`Erro ao reiniciar áudio: ${error.message}.`, "error");
                 });
         });
-// Evento de clique no botão de mudo/desmudo para alternar a visibilidade
-muteUnmuteBtn.addEventListener('click', () => {
-    volumeControlContainer.classList.toggle('active'); // Alterna a classe 'active'
-
-    // Lógica de mudo/desmudo existente
-   if (audio.volume > 0) {
-        lastVolume = audio.volume; // Salva o volume atual antes de mutar
-        audio.volume = 0;
-        volumeSlider.value = 0;
-        muteIcon.classList.remove('fa-volume-up');
-        muteIcon.classList.add('fa-volume-mute');
-    } else {
-        audio.volume = lastVolume > 0 ? lastVolume : 0.5; // Restaura ou define para 0.5
-        volumeSlider.value = audio.volume;
-        muteIcon.classList.remove('fa-volume-mute');
-        muteIcon.classList.add('fa-volume-up');
-    }
-});
-
-// Evento de input do slider
-volumeSlider.addEventListener('input', () => {
-    audio.volume = volumeSlider.value;
-    if (audio.volume > 0) {
-        muteIcon.classList.remove('fa-volume-mute');
-        muteIcon.classList.add('fa-volume-up');
-        lastVolume = audio.volume; // Atualiza o último volume quando o slider é movido
-    } else {
-        muteIcon.classList.remove('fa-volume-up');
-        muteIcon.classList.add('fa-volume-mute');
-    }
-});
-
-// Evento de clique no botão de aumentar volume
-volumeUpBtn.addEventListener('click', () => {
-    let currentVolume = parseFloat(volumeSlider.value);
-    currentVolume = Math.min(1, currentVolume + 0.1); // Aumenta em 0.1, máximo 1
-    volumeSlider.value = currentVolume;
-    audio.volume = currentVolume;
-    if (currentVolume > 0) {
-        muteIcon.classList.remove('fa-volume-mute');
-        muteIcon.classList.add('fa-volume-up');
-        lastVolume = currentVolume;
-    }
-});
-
-// Evento de clique no botão de diminuir volume
-volumeDownBtn.addEventListener('click', () => {
-    let currentVolume = parseFloat(volumeSlider.value);
-    currentVolume = Math.max(0, currentVolume - 0.1); // Diminui em 0.1, mínimo 0
-    volumeSlider.value = currentVolume;
-    audio.volume = currentVolume;
-    if (currentVolume === 0) {
-        muteIcon.classList.remove('fa-volume-up');
-        muteIcon.classList.add('fa-volume-mute');
-    } else {
-        muteIcon.classList.remove('fa-volume-mute');
-        muteIcon.classList.add('fa-volume-up');
-        lastVolume = currentVolume;
-    }
-});
         
+        const volumeButton = document.getElementById('volumeButton');
+        const volumeControls = document.getElementById('volumeControls');
+        const muteToggle = document.getElementById('muteToggle');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeDownButton = document.getElementById('volumeDown');
+        const volumeUpButton = document.getElementById('volumeUp');
+        const volumeIcon = volumeButton.querySelector('.material-icons');
+
+        let currentVolume = 50; // Initial volume
+
+        // Function to update the volume icon based on current volume and mute state
+        function updateVolumeIcon() {
+            if (muteToggle.checked) {
+                volumeIcon.textContent = 'volume_off';
+            } else if (currentVolume === 0) {
+                volumeIcon.textContent = 'volume_mute';
+            } else if (currentVolume > 0 && currentVolume < 50) {
+                volumeIcon.textContent = 'volume_down';
+            } else {
+                volumeIcon.textContent = 'volume_up';
+            }
+        }
+
+        // Toggle volume controls visibility
+        volumeButton.addEventListener('click', () => {
+            volumeControls.classList.toggle('active');
+        });
+
+        // Mute toggle functionality
+        muteToggle.addEventListener('change', () => {
+            if (muteToggle.checked) {
+            
+            	silentAudio.muted = true;
+                
+                volumeSlider.dataset.previousValue = volumeSlider.value; // Store current volume
+                volumeSlider.value = 0;
+                volumeSlider.disabled = true;
+                updateVolumeIcon();
+            } else {
+            
+            	silentAudio.muted = false;
+                
+                volumeSlider.value = volumeSlider.dataset.previousValue || currentVolume; // Restore previous volume
+                volumeSlider.disabled = false;
+                updateVolumeIcon();
+            }
+            currentVolume = parseInt(volumeSlider.value);
+        });
+
+        // Volume slider functionality
+        volumeSlider.addEventListener('input', () => {
+            currentVolume = parseInt(volumeSlider.value);
+            muteToggle.checked = currentVolume === 0; // Mute if slider is at 0
+            updateVolumeIcon();
+        });
+
+        // Volume down button
+        volumeDownButton.addEventListener('click', () => {
+            if (currentVolume > 0) {
+                currentVolume = Math.max(0, currentVolume - 10); // Decrease by 10, min 0
+                volumeSlider.value = currentVolume;
+                muteToggle.checked = currentVolume === 0;
+                updateVolumeIcon();
+            }
+        });
+
+        // Volume up button
+        volumeUpButton.addEventListener('click', () => {
+            if (currentVolume < 100) {
+                currentVolume = Math.min(100, currentVolume + 10); // Increase by 10, max 100
+                volumeSlider.value = currentVolume;
+                muteToggle.checked = false; // Unmute if increasing volume
+                updateVolumeIcon();
+            }
+        });
+
         // ==========================================================
         // INICIALIZAR O CLIENTE PUSHER BEAMS:
         // ==========================================================
@@ -2012,4 +2083,4 @@ volumeDownBtn.addEventListener('click', () => {
 		});
     </script>
 </body>
-	</html>
+</html>
