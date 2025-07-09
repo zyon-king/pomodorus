@@ -1,4 +1,3 @@
-https://sites.google.com/view/pomodorus/in%C3%ADcio
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1617,9 +1616,6 @@ https://sites.google.com/view/pomodorus/in%C3%ADcio
         function startBackgroundActivity() {
             const message = "A atividade em segundo plano foi iniciada com sucesso.";
             const notificationTitle = "Pomodorus"; // O título que aparecerá na notificação
-            // Set audio to loop
-            silentAudio.loop = true;
-            silentAudio.muted = true;
 
             // Attempt to play audio
             silentAudio.play()
@@ -1635,6 +1631,21 @@ https://sites.google.com/view/pomodorus/in%C3%ADcio
                 });          
             new Notification(notificationTitle, { body: message });
         }
+        
+        // Rewind to the beginning
+        silentAudio.addEventListener('ended', () => {
+            updateClockAndCheckPauses()
+            silentAudio.currentTime = 0; // Volta para o início
+            silentAudio.play()          // Toca novamente
+                .then(() => {
+                    console.log('Áudio terminou e foi reiniciado por silentAudio.addEventListener().');
+                    // Você pode adicionar um appendLog aqui se quiser registrar cada reinício
+                })
+                .catch(error => {
+                    console.error('Erro ao reiniciar áudio manualmente:', error.message);
+                    appendLog(`Erro ao reiniciar áudio: ${error.message}.`, "error");
+                });
+        });
 
         // ==========================================================
         // INICIALIZAR O CLIENTE PUSHER BEAMS:
@@ -1696,7 +1707,7 @@ https://sites.google.com/view/pomodorus/in%C3%ADcio
                     })
                     .catch((error) => {
                         console.error('Falha no registro do Service Worker:', error);
-                        alert('Falha no registro do Service Worker:');
+                        /*alert('Falha no registro do Service Worker:');*/
                     });
             } else {
                 console.warn('Este navegador não suporta Service Workers para notificações push.');
