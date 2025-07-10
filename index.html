@@ -823,6 +823,44 @@
         #modal-daily-repeat-checkbox {
         	transform: scale(2.2); /* Aumenta o elemento em 20% do seu tamanho original */
             transform-origin: left; /* Opcional: Define o ponto de origem da escala */
+        }        
+        
+        /* --- Modal para Popup --- */
+        .popup-modal-overlay {
+            position: fixed; /* Fixa o elemento na janela de visualização */
+            top: 0; /* Começa no topo da tela */
+            left: 0;
+            width: 100%; /* Ocupa toda a largura */
+            height: 100%; /* Ocupa toda a altura da viewport */
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center; /* Centraliza o conteúdo (config-modal-content) horizontalmente */
+            align-items: flex-start; /* Alinha o conteúdo (config-modal-content) no topo */
+            z-index: 200;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease-in-out;
+        }
+
+        .popup-modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Você também pode precisar ajustar o gist-modal-content para não ter margem superior extra */
+        .popup-modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 90%; /* Ajusta a largura para ser responsiva, por exemplo, 90% */
+            max-width: 400px; /* Mantém uma largura máxima para não ficar muito largo em telas grandes */
+            height: auto; /* Permite que a altura se ajuste ao conteúdo */
+            text-align: center; /* Centraliza o texto dentro do modal */
+            margin-top: 5%; /* Adiciona uma margem do topo para que não cole na parte superior da tela */
+            margin-bottom: 5%; /* Adiciona margem na parte inferior para respiro */
+            overflow-y: auto; /* Adiciona rolagem se o conteúdo exceder a altura do modal */
+            /* Remove 'max-width: 400px;' se você já tiver no .config-modal-content */
         }
         
         @keyframes fadeInScale {
@@ -896,7 +934,18 @@
         <div class="selection-carousel">
             <div class="selection-items-container" id="pause-end-minute-selection-items"></div>
         </div>
-    </div>
+    </div>  
+    
+    <div class="popup-modal-overlay" id="popup-modal-overlay">
+        <div class="popup-modal-content">
+            <h3>Toque do alarme iniciado.</h3>
+            
+            <div class="popup-modal-buttons">
+                <button id="popup-modal-stop-alarm" class="nav-button">Parar</button>                
+        	</div>
+        </div>
+	</div>
+            
     <div class="config-modal-overlay" id="modal-initial-time">
         <div class="config-modal-content">
             <h3>Definir Hora de Início da Pausa:</h3>
@@ -1071,7 +1120,8 @@
         let hasDailyResetOccurred = false; // Flag para controlar o reset de pausas diárias
         
         const silentAudio = new Audio('https://raw.githubusercontent.com/w3teal/awesome-ringtone/main/Google%20Pixel/2021%20-%20Your%20New%20Adventure.mp3');
-        const notificationSound = new Audio('https://files.catbox.moe/1f75z8.mp3'); // Certifique-se de ter um arquivo notification.mp3
+        
+        const notificationSound = new Audio('https://github.com/w3teal/awesome-ringtone/raw/refs/heads/main/Vivo/2022%20-%20Indomitable%20will.mp3'); // Certifique-se de ter um arquivo notification.mp3
         const alarmDisplay = document.getElementById('alarmDisplay'); // Elemento para mensagens de status
 
         // Variáveis temporárias para a configuração da nova pausa via modal
@@ -1192,12 +1242,42 @@
         // ==========================================================
         // MONITORES DO RELÓGIO E DISPARO DE NOTIFICAÇÕES
         // ==========================================================
-
+        const popupModalOverlay = document.getElementById('popup-modal-overlay');
+        const popupModalStopAlarmButton = document.getElementById('popup-modal-stop-alarm');
+        
+		// Inicia toque alarma, para atividade fundo
         function playNotificationSound() {
+
+            popupModalOverlay.classList.add('active');
             if (notificationSound) {
-                notificationSound.play().catch(e => console.error("Erro ao tocar o som:", e));
+                // Pause o silentAudio temporariamente para a notificação ter prioridade
+                silentAudio.pause();
+                silentAudio.currentTime = 0; // Opcional, para recomeçar do zero depois
+
+                notificationSound.play().catch(e => console.error("Erro ao tocar o som da notificação:", e));
             }
         }
+
+        // botão 'Parar' do popup
+        popupModalStopAlarmButton.addEventListener('click', () => {
+            notificationSound.pause(); // <--- Pause o som da notificação
+            notificationSound.currentTime = 0; // <--- Opcional: Reinicia o som da notificação
+
+            // Reinicia a atividade em segundo plano APÓS o som da notificação ter parado
+            startBackgroundActivity(); // <--- CHAME AQUI PARA REINICIAR O ÁUDIO SILENCIOSO
+
+            popupModalOverlay.classList.remove('active');
+        });
+
+        // fechar o popup clicando fora
+        popupModalOverlay.addEventListener('click', (event) => {
+            if (event.target === popupModalOverlay) {
+                notificationSound.pause(); // <--- Pause o som da notificação
+                notificationSound.currentTime = 0; // <--- Opcional: Reinicia o som da notificação
+                startBackgroundActivity(); // <--- CHAME AQUI PARA REINICIAR O ÁUDIO SILENCIOSO
+                popupModalOverlay.classList.remove('active');
+            }
+        });
 
         function triggerNotification(message) {
             showStatusMessage(message, false); // Exibe mensagem na tela
@@ -1906,8 +1986,7 @@
             // Attempt to play audio
             silentAudio.play()
                 .then(() => {
-                    appendLog("Áudio iniciado (em loop).", "success");     
-                    appendLog("Contador de fundo iniciado.", "info");
+                    appendLog("Áudio iniciado (em loop).", "success");
                 })
                 .catch(error => {
                     // Handle cases where autoplay is blocked or other errors occur
