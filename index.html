@@ -1,3 +1,35 @@
+<input type="range" id="volume-slider" min="0" max="1" step="0.001" value="1">
+// Evento de clique no botão de aumentar volume
+volumeUpBtn.addEventListener('click', () => {
+    let currentVolume = parseFloat(volumeSlider.value);
+    currentVolume = Math.min(1, currentVolume + 0.1); // <-- AQUI
+    volumeSlider.value = currentVolume;
+    audio.volume = currentVolume;
+    if (currentVolume > 0) {
+        muteIcon.classList.remove('fa-volume-mute');
+        muteIcon.classList.add('fa-volume-up');
+        lastVolume = currentVolume;
+    }
+});
+
+// Evento de clique no botão de diminuir volume
+volumeDownBtn.addEventListener('click', () => {
+    let currentVolume = parseFloat(volumeSlider.value);
+    currentVolume = Math.max(0, currentVolume - 0.01); // Ajuste para um passo menor
+    volumeSlider.value = currentVolume;
+    audio.volume = currentVolume;
+    if (currentVolume === 0) {
+        muteIcon.classList.remove('fa-volume-up');
+        muteIcon.classList.add('fa-volume-mute');
+    } else {
+        muteIcon.classList.remove('fa-volume-mute');
+        muteIcon.classList.add('fa-volume-up');
+        lastVolume = currentVolume;
+    }
+});
+
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
