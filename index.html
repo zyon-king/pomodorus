@@ -1724,6 +1724,7 @@
         
         // Abre o primeiro modal de configuração
         openPauseConfigModalButton.addEventListener('click', () => {
+	    silentAudio.play()
             // Sincroniza os carrosséis do modal com a hora atual ao abrir
             const now = new Date();
             initialPauseHourRef.value = now.getHours();
@@ -1992,7 +1993,7 @@
         
 
         manageGistButton.addEventListener('click', () => {
-        	startBackgroundActivity();
+        	/*startBackgroundActivity();*/
             gistConfigModal.classList.add('active');
             gistTokenInput.value = localStorage.getItem('github_pat') || '';
             gistIdInput.value = localStorage.getItem('gist_id') || '';
