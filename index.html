@@ -338,33 +338,39 @@
 
         /* --- Regras para os novos Modais de Configuração de Pausa --- */
         .config-modal-overlay {
-            position: fixed;
-            top: 0;
+            position: fixed; /* Fixa o elemento na janela de visualização */
+            top: 0; /* Começa no topo da tela */
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100%; /* Ocupa toda a largura */
+            height: 100%; /* Ocupa toda a altura da viewport */
             background-color: rgba(0, 0, 0, 0.8);
             display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 150; /* Acima dos carrosséis de seleção, abaixo do Gist modal */
+            justify-content: center; /* Centraliza o conteúdo (config-modal-content) horizontalmente */
+            align-items: flex-start; /* Alinha o conteúdo (config-modal-content) no topo */
+            z-index: 150;
             visibility: hidden;
             opacity: 0;
             transition: visibility 0s, opacity 0.3s ease-in-out;
         }
+
         .config-modal-overlay.active {
             visibility: visible;
             opacity: 1;
         }
+
         .config-modal-content {
             background-color: #fff;
             padding: 30px;
             border-radius: 10px;
-            border: 3px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            width: 90%;
-            max-width: 400px; /* Largura similar ao alarm-container */
-            text-align: center;
+            width: 90%; /* Ajusta a largura para ser responsiva, por exemplo, 90% */
+            max-width: 400px; /* Mantém uma largura máxima para não ficar muito largo em telas grandes */
+            height: auto; /* Permite que a altura se ajuste ao conteúdo */
+            text-align: center; /* Centraliza o texto dentro do modal */
+            margin-top: 5%; /* Adiciona uma margem do topo para que não cole na parte superior da tela */
+            margin-bottom: 5%; /* Adiciona margem na parte inferior para respiro */
+            overflow-y: auto; /* Adiciona rolagem se o conteúdo exceder a altura do modal */
+            /* Remove 'max-width: 400px;' se você já tiver no .config-modal-content */
         }
         .config-modal-content h3 {
             color: #003e80;
@@ -442,12 +448,11 @@
 
         /* --- Ajuste para o volume --- */
         .volume-container {
-            position: relative;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
+        margin-bottom: 20px; /* Espaço abaixo do botão de volume */
+        display: flex; /* Para centralizar o botão de volume dentro do container */
+        justify-content: center;
+        align-items: center;
+        flex-direction: column; /* Para empilhar o botão e os controles */
         }
 
         .volume-button {
@@ -455,9 +460,9 @@
             color: white;
             border: none;
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 28px;
+            width: 35px;
+            height: 35px;
+            font-size: 12px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -482,7 +487,12 @@
         }
 
         .volume-controls.active {
-            display: flex;
+            position: relative;
+            display: flex;/* Adicione um fundo e padding para que pareça uma "camada" dentro do modal */
+            background-color: #f8f8f8; /* Um fundo suave para os controles */
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1); /* Sombra interna para profundidade */
         }
 
         @keyframes fadeIn {
@@ -683,32 +693,40 @@
         
         /* --- Modal para Gist Config --- */
         .gist-modal-overlay {
-            position: fixed;
-            top: 0;
+            position: fixed; /* Fixa o elemento na janela de visualização */
+            top: 0; /* Começa no topo da tela */
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100%; /* Ocupa toda a largura */
+            height: 100%; /* Ocupa toda a altura da viewport */
             background-color: rgba(0, 0, 0, 0.8);
             display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 200; /* Acima de todos os outros modais */
+            justify-content: center; /* Centraliza o conteúdo (config-modal-content) horizontalmente */
+            align-items: flex-start; /* Alinha o conteúdo (config-modal-content) no topo */
+            z-index: 200;
             visibility: hidden;
             opacity: 0;
             transition: visibility 0s, opacity 0.3s ease-in-out;
         }
+
         .gist-modal-overlay.active {
             visibility: visible;
             opacity: 1;
         }
+
+        /* Você também pode precisar ajustar o gist-modal-content para não ter margem superior extra */
         .gist-modal-content {
             background-color: #fff;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            width: 90%;
-            max-width: 450px;
-            text-align: left;
+            width: 90%; /* Ajusta a largura para ser responsiva, por exemplo, 90% */
+            max-width: 400px; /* Mantém uma largura máxima para não ficar muito largo em telas grandes */
+            height: auto; /* Permite que a altura se ajuste ao conteúdo */
+            text-align: center; /* Centraliza o texto dentro do modal */
+            margin-top: 5%; /* Adiciona uma margem do topo para que não cole na parte superior da tela */
+            margin-bottom: 5%; /* Adiciona margem na parte inferior para respiro */
+            overflow-y: auto; /* Adiciona rolagem se o conteúdo exceder a altura do modal */
+            /* Remove 'max-width: 400px;' se você já tiver no .config-modal-content */
         }
         .gist-modal-content h3 {
             color: #00796b;
@@ -764,6 +782,8 @@
         
         /* Estilos do Footer */
         footer {
+        	display: flex;
+    		justify-content: center; 
             width: 100%;
             padding: 15px 0;
             text-align: center;
@@ -843,8 +863,7 @@
 
         <div id="active-pauses-section">
             <div class="section-title">Pausas Ativas:</div>
-            <ul id="pauses-list">
-                </ul>
+            <ul id="pauses-list"></ul>
         </div>
     </div>
 
@@ -878,7 +897,6 @@
             <div class="selection-items-container" id="pause-end-minute-selection-items"></div>
         </div>
     </div>
-
     <div class="config-modal-overlay" id="modal-initial-time">
         <div class="config-modal-content">
             <h3>Definir Hora de Início da Pausa:</h3>
@@ -903,7 +921,8 @@
                 </div>
             </div>
             <div class="modal-buttons">
-                <button id="modal-initial-time-next" class="nav-button">Avançar</button>
+                <button id="cancel-modal-initial" class="cancel-button">Cancelar</button>
+                <button id="modal-initial-time-next" class="nav-button">Avançar</button>                
             </div>
         </div>
     </div>
@@ -980,12 +999,11 @@
     </div>
 
     <div class="gist-modal-overlay" id="gist-config-modal">
-    	
+    <div class="gist-modal-content">
         <div class="volume-container">
             <button id="volumeButton" class="volume-button">
                 <i class="material-icons">volume_up</i>
             </button>
-
             <div id="volumeControls" class="volume-controls">
                 <div class="mute-switch">
                     <span>Mudo</span>
@@ -994,24 +1012,16 @@
                         <span class="slider"></span>
                     </label>
                 </div>
-
                 <div class="volume-slider-container">
-                  <div class="volume-adjust-buttons">
-                      <button id="volumeDown"><i class="material-icons">
-                      volume_mute
-                      </i></button>
-                      <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="50">
-                      <button id="volumeUp"><i class="material-icons">
-                      volume_up
-                      </i></button>
-                  </div>
+                    <div class="volume-adjust-buttons">
+                        <button id="volumeDown"><i class="material-icons">volume_mute</i></button>
+                        <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="50">
+                        <button id="volumeUp"><i class="material-icons">volume_up</i></button>
+                    </div>
                 </div>
-                
             </div>
         </div>
-        
-        <div class="gist-modal-content">
-            <h3>Configurar Gist do GitHub</h3>
+        <h3>Configurar Gist do GitHub</h3>
             <p>Para carregar ou salvar pausas com repetição diária, forneça seu Token de Acesso Pessoal (PAT) do GitHub e o ID do Gist.</p>
             <label for="gist-token">Token de Acesso Pessoal (PAT):</label>
             <input type="password" id="gist-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
@@ -1555,8 +1565,9 @@
         // ==========================================================
 
         const openPauseConfigModalButton = document.getElementById('openPauseConfigModalButton');
-        const modalInitialTime = document.getElementById('modal-initial-time');
-        const modalPauseDetails = document.getElementById('modal-pause-details');
+        const modalInitialTime = document.getElementById('modal-initial-time'); // Este é o overlay do primeiro modal
+        const modalPauseDetails = document.getElementById('modal-pause-details'); // Este é o overlay do segundo modal
+        const cancelModalInitialButton = document.getElementById('cancel-modal-initial'); // Verifique se este ID existe no seu HTML
 
         const modalInitialTimeNextButton = document.getElementById('modal-initial-time-next');
         const modalDetailsBackButton = document.getElementById('modal-details-back');
@@ -1567,7 +1578,7 @@
         const modalCamposDuracao = document.getElementById('modal-campos-duracao');
         const modalCamposFim = document.getElementById('modal-campos-fim');
         const modalDailyRepeatCheckbox = document.getElementById('modal-daily-repeat-checkbox');
-
+        
         // Abre o primeiro modal de configuração
         openPauseConfigModalButton.addEventListener('click', () => {
             // Sincroniza os carrosséis do modal com a hora atual ao abrir
@@ -1578,7 +1589,6 @@
             modalInitialPauseMinuteCarousel.updateMainCarouselPosition(initialPauseMinuteRef.value);
             modalInitialPauseHourCarousel.populateMainCarousel(); // Repopula para garantir que a classe 'selected' seja aplicada
             modalInitialPauseMinuteCarousel.populateMainCarousel(); // Repopula para garantir que a classe 'selected' seja aplicada
-
 
             // Reseta a seleção de duração/fim e o checkbox de repetição
             modalPauseModeDurationRadio.checked = true;
@@ -1613,6 +1623,12 @@
             modalPauseDetails.classList.remove('active');
         });
 
+        // Fecha o primeiro modal (se 'cancelModalInitialButton' for um botão no modal-initial-time)
+        if (cancelModalInitialButton) { // Verifique se o botão realmente existe
+            cancelModalInitialButton.addEventListener('click', () => {
+                modalInitialTime.classList.remove('active'); // <-- CORRIGIDO AQUI: usa modalInitialTime
+            });
+        }
         // Navega do primeiro modal para o segundo
         modalInitialTimeNextButton.addEventListener('click', () => {
             tempPauseStartHour = initialPauseHourRef.value;
@@ -1830,6 +1846,7 @@
         const saveGistConfigButton = document.getElementById('saveGistConfig');
         const gistTokenInput = document.getElementById('gist-token');
         const gistIdInput = document.getElementById('gist-id');
+        
 
         manageGistButton.addEventListener('click', () => {
         	startBackgroundActivity();
@@ -1840,6 +1857,14 @@
 
         cancelGistConfigButton.addEventListener('click', () => {
             gistConfigModal.classList.remove('active');
+        });
+        
+        // Fechar gistConfigModal ao clicar fora
+        gistConfigModal.addEventListener('click', (event) => {
+            // Verifica se o clique foi diretamente no overlay, não no conteúdo interno
+            if (event.target === gistConfigModal) {
+                gistConfigModal.classList.remove('active');
+            }
         });
 
         saveGistConfigButton.addEventListener('click', async () => {
