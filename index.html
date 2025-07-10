@@ -92,21 +92,21 @@
             transform: none; /* Remove qualquer transformação indesejada de centralização */
         }
 
-        /* --- Regras para o Botão de Ação --- */
+        /* --- Regras para o Botão de Ação --- 
         button {
             padding: 15px 30px;
             font-size: 1.2em;
             color: #ffffff;
-            background-color: #00796b; /* Botão verde-azulado */
+            background-color: #00796b; /* Botão verde-azulado 
             border: none;
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            margin-top: 30px; /* Adicionado para separar o botão das opções de pausa */
+            margin-top: 30px; /* Adicionado para separar o botão das opções de pausa 
             margin-bottom: 15px; /* Espaço entre o botão e a mensagem de status */
             
-            animation: fadeInScale 1s ease-out; /* Animação de entrada */
-        }
+            animation: fadeInScale 1s ease-out; /* Animação de entrada 
+        } */
         button:hover {
             background-color: #004d40; /* Verde-azulado mais escuro no hover */
             transform: translateY(-3px);
@@ -300,6 +300,21 @@
             margin-bottom: 30px;
             border-bottom: 3px solid #b2dfdb;
             padding-bottom: 12px;
+        }        
+        
+        .form-group button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            color: #ffffff;
+            background-color: #00796b; /* Botão verde-azulado */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 5px; /* Adicionado para separar o botão das opções de pausa */
+            margin-bottom: 15px; /* Espaço entre o botão e a mensagem de status */
+            
+            animation: fadeInScale 1s ease-out; /* Animação de entrada */
         }
 
         .input-group {
@@ -365,6 +380,18 @@
             margin-top: 30px;
         }
         .config-modal-content .modal-buttons button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            color: #ffffff;
+            background-color: #00796b; /* Botão verde-azulado */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 30px; /* Adicionado para separar o botão das opções de pausa */
+            margin-bottom: 15px; /* Espaço entre o botão e a mensagem de status */
+            
+            animation: fadeInScale 1s ease-out; /* Animação de entrada */
             margin-top: 0;
             padding: 10px 20px;
             font-size: 1em;
@@ -411,14 +438,6 @@
         /* Ajuste para carrosséis dentro de modais */
         .config-modal-content .carousel-container {
             margin: 5px; /* Espaçamento menor dentro do modal */
-        }
-		        .volume-container {
-            position: relative;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
         }
 
         /* --- Ajuste para o volume --- */
@@ -531,8 +550,6 @@
             -ms-transform: translateX(16px);
             transform: translateX(16px);
         }
-
-        /* --- Início das Correções para Centralização --- */
 
         .volume-slider-container {
             /* Define este container como flex para alinhar seus filhos (volume-adjust-buttons) */
@@ -722,6 +739,18 @@
             gap: 10px;
         }
         .gist-modal-content .modal-buttons button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            color: #ffffff;
+            background-color: #00796b; /* Botão verde-azulado */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 30px; /* Adicionado para separar o botão das opções de pausa */
+            margin-bottom: 15px; /* Espaço entre o botão e a mensagem de status */
+            
+            animation: fadeInScale 1s ease-out; /* Animação de entrada */
             margin-top: 0;
             padding: 10px 20px;
             font-size: 1em;
@@ -745,6 +774,18 @@
         }
         
         #manageGistButton {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            color: #ffffff;
+            background-color: #00796b; /* Botão verde-azulado */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 30px; /* Adicionado para separar o botão das opções de pausa */
+            margin-bottom: 15px; /* Espaço entre o botão e a mensagem de status */
+            
+            animation: fadeInScale 1s ease-out; /* Animação de entrada */
         	margin-top: 20px; 
             background-color: #003e80;
             /*box-shadow:
@@ -1867,12 +1908,17 @@
                 });
         });
         
+        
         const volumeButton = document.getElementById('volumeButton');
         const volumeControls = document.getElementById('volumeControls');
         const muteToggle = document.getElementById('muteToggle');
         const volumeSlider = document.getElementById('volumeSlider');
         const volumeDownButton = document.getElementById('volumeDown');
         const volumeUpButton = document.getElementById('volumeUp');
+        
+        const volumeDownIcon = volumeDownButton.querySelector('.material-icons');
+        const volumeUpIcon = volumeUpButton.querySelector('.material-icons');
+        
         const volumeIcon = volumeButton.querySelector('.material-icons');
 
         let currentVolume = 50; // Initial volume
@@ -1880,21 +1926,36 @@
         // Function to update the volume icon based on current volume and mute state
         function updateVolumeIcon() {
             if (muteToggle.checked) {
-                volumeIcon.textContent = 'volume_off';
+                volumeDownIcon.textContent = 'volume_off';
             } else if (currentVolume === 0) {
-                volumeIcon.textContent = 'volume_mute';
+                volumeDownIcon.textContent = 'volume_mute';
             } else if (currentVolume > 0 && currentVolume < 50) {
-                volumeIcon.textContent = 'volume_down';
+                volumeUpIcon.textContent = 'volume_down';
+                volumeDownIcon.textContent = 'volume_mute';
             } else {
-                volumeIcon.textContent = 'volume_up';
+                volumeUpIcon.textContent = 'volume_up';
+                volumeDownIcon.textContent = 'volume_mute';
             }
         }
 
         // Toggle volume controls visibility
         volumeButton.addEventListener('click', () => {
+            // Primeiro, alternamos a classe 'active'
             volumeControls.classList.toggle('active');
-        });
 
+            // Depois, verificamos se a classe 'active' AGORA está presente
+            if (volumeControls.classList.contains('active')) { // <-- CORREÇÃO AQUI
+                volumeIcon.textContent = 'close'; // Ícone 'close' (um 'X')
+            } else {
+                // Se a camada foi fechada, restaura o ícone de volume apropriado
+                // É melhor chamar updateVolumeIcon() aqui, 
+                // pois ela considera o volume atual e estado de mudo.
+                // Se você apenas definir para 'volume_up', 
+                // pode estar incorreto se o volume estiver mutado ou baixo.             
+                volumeIcon.textContent = 'volume_up';
+            }
+        });
+        
         // Mute toggle functionality
         muteToggle.addEventListener('change', () => {
             if (muteToggle.checked) {
