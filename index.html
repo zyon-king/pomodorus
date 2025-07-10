@@ -47,13 +47,22 @@
             pointer-events: none; /* Garante que não interfira com cliques */
             z-index: 0; /* Fica no fundo */
         }
+        .particles-icon-container {
+            position: fixed; /* cobre a tela inteira */
+            top: 0;
+            left: 0;
         
+        }
         @keyframes floatAndFade {
             0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.5; }
             50% { transform: translateY(-50vh) translateX(50vw) scale(1.2); opacity: 0.2; }
             100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.5; }
         }
-
+        
+        /* No seu bloco <style> */
+        .particle.paused {
+            animation-play-state: paused;
+        }
 
         .alarm-container {
         	color: #00ccff; /* Azul neon */
@@ -448,13 +457,24 @@
 
         /* --- Ajuste para o volume --- */
         .volume-container {
-        margin-bottom: 20px; /* Espaço abaixo do botão de volume */
-        display: flex; /* Para centralizar o botão de volume dentro do container */
-        justify-content: center;
-        align-items: center;
-        flex-direction: column; /* Para empilhar o botão e os controles */
+            margin-bottom: 20px; /* Espaço abaixo do botão de volume */
+            display: flex; /* Para centralizar o botão de volume dentro do container */
+            justify-content: center;
+            align-items: center;
+            flex-direction: column; /* Para empilhar o botão e os controles */
+    		transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
-
+        /* Nova regra CSS: Aplica a borda e sombra quando a classe `has-controls-active` está presente */
+        .volume-container.has-controls-active {        
+            background-color: #f8f8f8; /* Um fundo suave para os controles */
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1); /* Sombra interna para profundidade */
+            border-radius: 12px; /* Arredonde as bordas para combinar */
+            padding: 10px; /* Adicione um padding para a borda não encostar no conteúdo */
+            
+            /*border: 2px solid #00ccff; Cor da borda neon, por exemplo */            
+            /*box-shadow: 0 0 15px rgba(0, 204, 255, 0.5), Sombra neon azul */
+                        /* inset 0 0 8px rgba(0, 204, 255, 0.3);  Sombra interna neon */
+        }
         .volume-button {
             background-color: #007bff;
             color: white;
@@ -479,7 +499,6 @@
             display: none;
             margin-top: 20px;
             padding-top: 15px;
-            border-top: 1px solid #eee;
             animation: fadeIn 0.3s ease-in-out forwards;
             flex-direction: column;
             gap: 15px;
@@ -489,10 +508,8 @@
         .volume-controls.active {
             position: relative;
             display: flex;/* Adicione um fundo e padding para que pareça uma "camada" dentro do modal */
-            background-color: #f8f8f8; /* Um fundo suave para os controles */
             padding: 15px;
             border-radius: 8px;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.1); /* Sombra interna para profundidade */
         }
 
         @keyframes fadeIn {
@@ -504,8 +521,9 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
+            width: auto;
             max-width: 200px;
+            background-color: ;
         }
 
         .switch {
@@ -513,6 +531,8 @@
             display: inline-block;
             width: 40px;
             height: 24px;
+            top: 5px;
+            left: 5px;
         }
 
         .switch input {
@@ -876,6 +896,11 @@
     </style>
 </head>
 <body>
+
+	<div class="particles-icon-container">
+		<button id="particlesIconButton"><i class="material-icons">pause</i></button>
+	</div>
+    
     <button id="sendAppwriteNotification" style="margin-left: 10px; padding: 10px 20px; font-size: 16px;">
         Disparar Notificação (Appwrite)
     </button>
@@ -940,7 +965,7 @@
         <div class="popup-modal-content">
             <h3>Toque do alarme iniciado.</h3>
             
-            <div class="popup-modal-buttons">
+            <div class="modal-buttons">
                 <button id="popup-modal-stop-alarm" class="nav-button">Parar</button>                
         	</div>
         </div>
@@ -1094,22 +1119,58 @@
         // Função para criar as partículas de fundo
         // ==========================================================        
         function createParticles() {
-            const numParticles = 60;
+            const numParticles = 80;
             const container = document.getElementById('particle-container');
 
             for (let i = 0; i < numParticles; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
-                particle.style.width = `${Math.random() * 10 + 5}px`;
+                particle.style.width = `${Math.random() * 6 + 3}px`;
                 particle.style.height = particle.style.width;
                 particle.style.left = `${Math.random() * 100}vw`;
                 particle.style.top = `${Math.random() * 100}vh`;
-                particle.style.animationDelay = `${Math.random() * 15}s`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
                 container.appendChild(particle);
             }
         }
 
         createParticles();
+        
+        // Adicione esta variável de estado no topo do seu script, junto com outras variáveis globais
+        let areParticlesPaused = false; // Começa como false, pois as partículas iniciam animando
+
+        // Suas funções pauseParticles() e resumeParticles() (que você já tem):
+        function pauseParticles() {
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach(particle => {
+                particle.classList.add('paused');
+            });
+            console.log('Animação das partículas pausada.');
+        }
+
+        function resumeParticles() {
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach(particle => {
+                particle.classList.remove('paused');
+            });
+            console.log('Animação das partículas retomada.');
+        }
+
+        // Seu código para o botão pause/resume particles:
+        const particlesIconButton = document.getElementById('particlesIconButton');
+        const particlesIcon = particlesIconButton.querySelector('.material-icons');
+
+        particlesIconButton.addEventListener('click', () => {
+            if (areParticlesPaused) { // Se as partículas ESTÃO pausadas, então vamos RESUMIR
+                resumeParticles();
+                particlesIcon.textContent = 'pause'; // Altera o ícone para "pause" (significando que está rodando e pode ser pausado)
+                areParticlesPaused = false; // Atualiza o estado para "não pausado"
+            } else { // Se as partículas NÃO ESTÃO pausadas, então vamos PAUSAR
+                pauseParticles();
+                particlesIcon.textContent = 'play_arrow'; // Altera o ícone para "play" (significando que está pausado e pode ser retomado)
+                areParticlesPaused = true; // Atualiza o estado para "pausado"
+            }
+        });
     
         // --- COMEÇO DO BLOCO DE ACRÉSCIMO/SUBSTITUIÇÃO COMPLETA DO SCRIPT ---
 
@@ -1122,6 +1183,8 @@
         const silentAudio = new Audio('https://raw.githubusercontent.com/w3teal/awesome-ringtone/main/Google%20Pixel/2021%20-%20Your%20New%20Adventure.mp3');
         
         const notificationSound = new Audio('https://github.com/w3teal/awesome-ringtone/raw/refs/heads/main/Vivo/2022%20-%20Indomitable%20will.mp3'); // Certifique-se de ter um arquivo notification.mp3
+        notificationSound.loop = true;
+        
         const alarmDisplay = document.getElementById('alarmDisplay'); // Elemento para mensagens de status
 
         // Variáveis temporárias para a configuração da nova pausa via modal
@@ -2012,7 +2075,7 @@
                 });
         });
         
-        
+        const volumeContainer = document.querySelector('.volume-container');
         const volumeButton = document.getElementById('volumeButton');
         const volumeControls = document.getElementById('volumeControls');
         const muteToggle = document.getElementById('muteToggle');
@@ -2048,8 +2111,9 @@
             volumeControls.classList.toggle('active');
 
             // Depois, verificamos se a classe 'active' AGORA está presente
-            if (volumeControls.classList.contains('active')) { // <-- CORREÇÃO AQUI
+            if (volumeControls.classList.contains('active')) {
                 volumeIcon.textContent = 'close'; // Ícone 'close' (um 'X')
+        		volumeContainer.classList.add('has-controls-active');
             } else {
                 // Se a camada foi fechada, restaura o ícone de volume apropriado
                 // É melhor chamar updateVolumeIcon() aqui, 
@@ -2057,6 +2121,7 @@
                 // Se você apenas definir para 'volume_up', 
                 // pode estar incorreto se o volume estiver mutado ou baixo.             
                 volumeIcon.textContent = 'volume_up';
+        		volumeContainer.classList.remove('has-controls-active'); // Remove a borda
             }
         });
         
@@ -2068,21 +2133,20 @@
                 
                 volumeSlider.dataset.previousValue = volumeSlider.value; // Store current volume
                 volumeSlider.value = 0;
-                volumeSlider.disabled = true;
                 updateVolumeIcon();
             } else {
             
             	silentAudio.muted = false;
                 
                 volumeSlider.value = volumeSlider.dataset.previousValue || currentVolume; // Restore previous volume
-                volumeSlider.disabled = false;
                 updateVolumeIcon();
             }
             currentVolume = parseInt(volumeSlider.value);
         });
 
         // Volume slider functionality
-        volumeSlider.addEventListener('input', () => { 
+        volumeSlider.addEventListener('input', () => {            
+            silentAudio.muted = false;
             currentVolume = parseInt(volumeSlider.value);
             muteToggle.checked = currentVolume === 0; // Mute if slider is at 0       
         	silentAudio.volume = parseInt(volumeSlider.value) / 100;
@@ -2094,7 +2158,7 @@
             if (currentVolume > 0) {
                 currentVolume = Math.max(0, currentVolume - 10); // Decrease by 10, min 0
                 volumeSlider.value = currentVolume;
-                silentAudio.volume = currentVolume / 100; // ADICIONE ESTA LINHA
+                silentAudio.volume = parseInt(volumeSlider.value) / 100;
                 muteToggle.checked = currentVolume === 0;
                 updateVolumeIcon();
             }
@@ -2106,10 +2170,11 @@
             if (currentVolume < 100) {
                 currentVolume = Math.min(100, currentVolume + 10); // Increase by 10, max 100
                 volumeSlider.value = currentVolume;
-                silentAudio.volume = currentVolume / 100; // ADICIONE ESTA LINHA
+                silentAudio.volume = parseInt(volumeSlider.value) / 100; // ADICIONE ESTA LINHA
                 muteToggle.checked = false; // Unmute if increasing volume
                 updateVolumeIcon();
             }
+            	
         });
 
         // ==========================================================
