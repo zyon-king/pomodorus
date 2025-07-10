@@ -1327,7 +1327,16 @@
             notificationSound.currentTime = 0; // <--- Opcional: Reinicia o som da notificação
 
             // Reinicia a atividade em segundo plano APÓS o som da notificação ter parado
-            startBackgroundActivity(); // <--- CHAME AQUI PARA REINICIAR O ÁUDIO SILENCIOSO
+            silentAudio.play()
+	        	.then(() => {
+	        	    appendLog("Áudio iniciado (em loop).", "success");
+	        	})
+	        	.catch(error => {
+	        	    // Handle cases where autoplay is blocked or other errors occur
+	        	    appendLog(`Erro ao iniciar áudio: ${error.message}. O áudio requer interação do usuário.`, "error");
+	        	    // If audio fails to play, don't start the counter (or handle it differently)
+	        	    appendLog("A atividade em segundo plano não foi iniciada devido ao erro do áudio.", "error");
+	        	}); 
 
             popupModalOverlay.classList.remove('active');
         });
@@ -1337,8 +1346,17 @@
             if (event.target === popupModalOverlay) {
                 notificationSound.pause(); // <--- Pause o som da notificação
                 notificationSound.currentTime = 0; // <--- Opcional: Reinicia o som da notificação
-                startBackgroundActivity(); // <--- CHAME AQUI PARA REINICIAR O ÁUDIO SILENCIOSO
                 popupModalOverlay.classList.remove('active');
+                silentAudio.play()
+	                .then(() => {
+	                    appendLog("Áudio iniciado (em loop).", "success");
+	                })
+	                .catch(error => {
+	                    // Handle cases where autoplay is blocked or other errors occur
+	                    appendLog(`Erro ao iniciar áudio: ${error.message}. O áudio requer interação do usuário.`, "error");
+	                    // If audio fails to play, don't start the counter (or handle it differently)
+	                    appendLog("A atividade em segundo plano não foi iniciada devido ao erro do áudio.", "error");
+	                }); 
             }
         });
 
@@ -1724,6 +1742,7 @@
         
         // Abre o primeiro modal de configuração
         openPauseConfigModalButton.addEventListener('click', () => {
+	    silentAudio.play()
             // Sincroniza os carrosséis do modal com a hora atual ao abrir
             const now = new Date();
             initialPauseHourRef.value = now.getHours();
@@ -1992,7 +2011,16 @@
         
 
         manageGistButton.addEventListener('click', () => {
-        	startBackgroundActivity();
+            silentAudio.play()
+                .then(() => {
+                    appendLog("Áudio iniciado (em loop).", "success");
+                })
+                .catch(error => {
+                    // Handle cases where autoplay is blocked or other errors occur
+                    appendLog(`Erro ao iniciar áudio: ${error.message}. O áudio requer interação do usuário.`, "error");
+                    // If audio fails to play, don't start the counter (or handle it differently)
+                    appendLog("A atividade em segundo plano não foi iniciada devido ao erro do áudio.", "error");
+                }); 
             gistConfigModal.classList.add('active');
             gistTokenInput.value = localStorage.getItem('github_pat') || '';
             gistIdInput.value = localStorage.getItem('gist_id') || '';
@@ -2041,25 +2069,7 @@
 
         // ==========================================================
         // TOCAR AUDIO PARA MANTER ATIVIDADE DA PAGINA:
-        // ==========================================================
-        function startBackgroundActivity() {
-            const message = "A atividade em segundo plano foi iniciada com sucesso.";
-            const notificationTitle = "Pomodorus"; // O título que aparecerá na notificação
-
-            // Attempt to play audio
-            silentAudio.play()
-                .then(() => {
-                    appendLog("Áudio iniciado (em loop).", "success");
-                })
-                .catch(error => {
-                    // Handle cases where autoplay is blocked or other errors occur
-                    appendLog(`Erro ao iniciar áudio: ${error.message}. O áudio requer interação do usuário.`, "error");
-                    // If audio fails to play, don't start the counter (or handle it differently)
-                    appendLog("A atividade em segundo plano não foi iniciada devido ao erro do áudio.", "error");
-                });          
-            new Notification(notificationTitle, { body: message });
-        }
-        
+        // ==========================================================       
         // Rewind to the beginning
         silentAudio.addEventListener('ended', () => {
             updateClockAndCheckPauses()
@@ -2156,7 +2166,7 @@
         // Volume down button
         volumeDownButton.addEventListener('click', () => {
             if (currentVolume > 0) {
-                currentVolume = Math.max(0, currentVolume - 10); // Decrease by 10, min 0
+                currentVolume = Math.max(0, currentVolume - 4); // Decrease by 10, min 0
                 volumeSlider.value = currentVolume;
                 silentAudio.volume = parseInt(volumeSlider.value) / 100;
                 muteToggle.checked = currentVolume === 0;
@@ -2168,7 +2178,7 @@
         volumeUpButton.addEventListener('click', () => {
 			silentAudio.muted = false;
             if (currentVolume < 100) {
-                currentVolume = Math.min(100, currentVolume + 10); // Increase by 10, max 100
+                currentVolume = Math.min(100, currentVolume + 4); // Increase by 10, max 100
                 volumeSlider.value = currentVolume;
                 silentAudio.volume = parseInt(volumeSlider.value) / 100; // ADICIONE ESTA LINHA
                 muteToggle.checked = false; // Unmute if increasing volume
