@@ -1642,8 +1642,7 @@
         }
 
         // ==========================================================
-        // CONFIGURAÇÃO DOS CARROUSSELS E MODAIS
-        // ==========================================================
+        // CONFIGURAÇÃO DOS CARROUSSELS E MODAIS ==========================================================
 
         // Inicialização dos valores de referência para os carrosséis
         const initialPauseHourRef = { value: 0 };
@@ -2138,17 +2137,19 @@
         // Mute toggle functionality
         muteToggle.addEventListener('change', () => {
             if (muteToggle.checked) {
-            
-            	silentAudio.muted = true;
-                
-                volumeSlider.dataset.previousValue = volumeSlider.value; // Store current volume
-                volumeSlider.value = 0;
+                // Define o volume para um valor muito baixo (por exemplo, 0.01) em vez de mutar
+                silentAudio.volume = 0.004; // Quase inaudível
+                silentAudio.muted = false; // Garante que não esteja explicitamente mutado
+
+                volumeSlider.dataset.previousValue = volumeSlider.value; // Armazena o volume atual do slider
+                volumeSlider.value = 0; // Move o slider para 0 para indicar "quase mutado"
                 updateVolumeIcon();
             } else {
-            
-            	silentAudio.muted = false;
-                
-                volumeSlider.value = volumeSlider.dataset.previousValue || currentVolume; // Restore previous volume
+                silentAudio.muted = false; // Garante que não esteja mutado
+                // Restaura o volume para o valor anterior ou o volume padrão (currentVolume)
+                silentAudio.volume = (volumeSlider.dataset.previousValue || currentVolume) / 100; // Divide por 100 se o slider for de 0-100
+
+                volumeSlider.value = volumeSlider.dataset.previousValue || currentVolume; // Restaura o valor do slider
                 updateVolumeIcon();
             }
             currentVolume = parseInt(volumeSlider.value);
@@ -2162,23 +2163,38 @@
         	silentAudio.volume = parseInt(volumeSlider.value) / 100;
             updateVolumeIcon();
         });
-
+        
         // Volume down button
-        volumeDownButton.addEventListener('click', () => {
-            if (currentVolume > 0) {
-                currentVolume = Math.max(0, currentVolume - 4); // Decrease by 10, min 0
-                volumeSlider.value = currentVolume;
-                silentAudio.volume = parseInt(volumeSlider.value) / 100;
-                muteToggle.checked = currentVolume === 0;
-                updateVolumeIcon();
-            }
-        });
+        volumeDownButton.addEventListener('click', () => {
+            // Garante que o volume não desça abaixo de 0
+            if (currentVolume > 0) {
+                // Diminui o volume em 2, com um mínimo de 0
+                currentVolume = Math.max(0, currentVolume - 8);
+
+                // Atualiza o slider
+                volumeSlider.value = currentVolume;
+
+                // Define o volume do áudio
+                // Se currentVolume for 0, definimos para um valor muito baixo (quase inaudível)
+                if (currentVolume === 0) {
+                    silentAudio.volume = 0.004; // Quase inaudível
+                } else {
+                    silentAudio.volume = currentVolume / 100; // Converte para a escala de 0 a 1
+                }
+
+                // Se o volume chegar a 0, ou quase inaudível, marca o muteToggle
+                // Você pode ajustar 0.01 se quiser um limiar diferente
+                muteToggle.checked = currentVolume === 0.004; // Marca como "mutado" visualmente se o volume chegar a 0
+
+                updateVolumeIcon();
+            }
+        });
 
         // Volume up button
         volumeUpButton.addEventListener('click', () => {
 			silentAudio.muted = false;
             if (currentVolume < 100) {
-                currentVolume = Math.min(100, currentVolume + 4); // Increase by 10, max 100
+                currentVolume = Math.min(100, currentVolume + 8); // Increase by 10, max 100
                 volumeSlider.value = currentVolume;
                 silentAudio.volume = parseInt(volumeSlider.value) / 100; // ADICIONE ESTA LINHA
                 muteToggle.checked = false; // Unmute if increasing volume
