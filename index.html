@@ -902,7 +902,7 @@
 	</div>
     
     <button id="sendAppwriteNotification" style="margin-left: 10px; padding: 10px 20px; font-size: 16px;">
-        Disparar Notificação (Appwrite)
+        Disparar Notificação | Appwrite
     </button>
 	
     <div id="particle-container"></div>  
@@ -1180,7 +1180,7 @@
         let activePauses = []; // Array para armazenar todos os objetos de pausa
         let hasDailyResetOccurred = false; // Flag para controlar o reset de pausas diárias
         
-        const silentAudio = new Audio('https://raw.githubusercontent.com/w3teal/awesome-ringtone/main/Google%20Pixel/2021%20-%20Your%20New%20Adventure.mp3');
+        const mainAudio = new Audio('https://raw.githubusercontent.com/w3teal/awesome-ringtone/main/Google%20Pixel/2021%20-%20Your%20New%20Adventure.mp3');
         
         const notificationSound = new Audio('https://github.com/w3teal/awesome-ringtone/raw/refs/heads/main/Vivo/2022%20-%20Indomitable%20will.mp3'); // Certifique-se de ter um arquivo notification.mp3
         notificationSound.loop = true;
@@ -1313,9 +1313,9 @@
 
             popupModalOverlay.classList.add('active');
             if (notificationSound) {
-                // Pause o silentAudio temporariamente para a notificação ter prioridade
-                silentAudio.pause();
-                silentAudio.currentTime = 0; // Opcional, para recomeçar do zero depois
+                // Pause o mainAudio temporariamente para a notificação ter prioridade
+                mainAudio.pause();
+                mainAudio.currentTime = 0; // Opcional, para recomeçar do zero depois
 
                 notificationSound.play().catch(e => console.error("Erro ao tocar o som da notificação:", e));
             }
@@ -1327,7 +1327,7 @@
             notificationSound.currentTime = 0; // <--- Opcional: Reinicia o som da notificação
 
             // Reinicia a atividade em segundo plano APÓS o som da notificação ter parado
-            silentAudio.play()
+            mainAudio.play()
 	        	.then(() => {
 	        	    appendLog("Áudio iniciado (em loop).", "success");
 	        	})
@@ -1347,7 +1347,7 @@
                 notificationSound.pause(); // <--- Pause o som da notificação
                 notificationSound.currentTime = 0; // <--- Opcional: Reinicia o som da notificação
                 popupModalOverlay.classList.remove('active');
-                silentAudio.play()
+                mainAudio.play()
 	                .then(() => {
 	                    appendLog("Áudio iniciado (em loop).", "success");
 	                })
@@ -1741,7 +1741,7 @@
         
         // Abre o primeiro modal de configuração
         openPauseConfigModalButton.addEventListener('click', () => {
-	    silentAudio.play()
+	    mainAudio.play()
             // Sincroniza os carrosséis do modal com a hora atual ao abrir
             const now = new Date();
             initialPauseHourRef.value = now.getHours();
@@ -2010,7 +2010,7 @@
         
 
         manageGistButton.addEventListener('click', () => {
-            silentAudio.play()
+            mainAudio.play()
                 .then(() => {
                     appendLog("Áudio iniciado (em loop).", "success");
                 })
@@ -2070,12 +2070,12 @@
         // TOCAR AUDIO PARA MANTER ATIVIDADE DA PAGINA:
         // ==========================================================       
         // Rewind to the beginning
-        silentAudio.addEventListener('ended', () => {
+        mainAudio.addEventListener('ended', () => {
             updateClockAndCheckPauses()
-            silentAudio.currentTime = 0; // Volta para o início
-            silentAudio.play()          // Toca novamente
+            mainAudio.currentTime = 0; // Volta para o início
+            mainAudio.play()          // Toca novamente
                 .then(() => {
-                    console.log('Áudio terminou e foi reiniciado por silentAudio.addEventListener().');
+                    console.log('Áudio terminou e foi reiniciado por mainAudio.addEventListener().');
                     // Você pode adicionar um appendLog aqui se quiser registrar cada reinício
                 })
                 .catch(error => {
@@ -2138,16 +2138,16 @@
         muteToggle.addEventListener('change', () => {
             if (muteToggle.checked) {
                 // Define o volume para um valor muito baixo (por exemplo, 0.01) em vez de mutar
-                silentAudio.volume = 0.004; // Quase inaudível
-                silentAudio.muted = false; // Garante que não esteja explicitamente mutado
+                mainAudio.volume = 0.004; // Quase inaudível
+                mainAudio.muted = false; // Garante que não esteja explicitamente mutado
 
                 volumeSlider.dataset.previousValue = volumeSlider.value; // Armazena o volume atual do slider
                 volumeSlider.value = 0; // Move o slider para 0 para indicar "quase mutado"
                 updateVolumeIcon();
             } else {
-                silentAudio.muted = false; // Garante que não esteja mutado
+                mainAudio.muted = false; // Garante que não esteja mutado
                 // Restaura o volume para o valor anterior ou o volume padrão (currentVolume)
-                silentAudio.volume = (volumeSlider.dataset.previousValue || currentVolume) / 100; // Divide por 100 se o slider for de 0-100
+                mainAudio.volume = (volumeSlider.dataset.previousValue || currentVolume) / 100; // Divide por 100 se o slider for de 0-100
 
                 volumeSlider.value = volumeSlider.dataset.previousValue || currentVolume; // Restaura o valor do slider
                 updateVolumeIcon();
@@ -2157,10 +2157,10 @@
 
         // Volume slider functionality
         volumeSlider.addEventListener('input', () => {            
-            silentAudio.muted = false;
+            mainAudio.muted = false;
             currentVolume = parseInt(volumeSlider.value);
             muteToggle.checked = currentVolume === 0; // Mute if slider is at 0       
-        	silentAudio.volume = parseInt(volumeSlider.value) / 100;
+        	mainAudio.volume = parseInt(volumeSlider.value) / 100;
             updateVolumeIcon();
         });
         
@@ -2177,9 +2177,9 @@
                 // Define o volume do áudio
                 // Se currentVolume for 0, definimos para um valor muito baixo (quase inaudível)
                 if (currentVolume === 0) {
-                    silentAudio.volume = 0.004; // Quase inaudível
+                    mainAudio.volume = 0.004; // Quase inaudível
                 } else {
-                    silentAudio.volume = currentVolume / 100; // Converte para a escala de 0 a 1
+                    mainAudio.volume = currentVolume / 100; // Converte para a escala de 0 a 1
                 }
 
                 // Se o volume chegar a 0, ou quase inaudível, marca o muteToggle
@@ -2192,11 +2192,11 @@
 
         // Volume up button
         volumeUpButton.addEventListener('click', () => {
-			silentAudio.muted = false;
+			mainAudio.muted = false;
             if (currentVolume < 100) {
                 currentVolume = Math.min(100, currentVolume + 8); // Increase by 10, max 100
                 volumeSlider.value = currentVolume;
-                silentAudio.volume = parseInt(volumeSlider.value) / 100; // ADICIONE ESTA LINHA
+                mainAudio.volume = parseInt(volumeSlider.value) / 100; // ADICIONE ESTA LINHA
                 muteToggle.checked = false; // Unmute if increasing volume
                 updateVolumeIcon();
             }
