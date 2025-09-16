@@ -147,7 +147,7 @@
             user-select: none;
         }
 
-        .btn-criar {
+        .btn-general {
             width: 30%;
             padding: 1rem;
             font-size: 1.1rem;
@@ -161,7 +161,7 @@
             box-shadow: var(--sombra-leve);
         }
 
-        .btn-criar:hover {
+        .btn-general:hover {
             background-color: var(--cor-acento);
             transform: translateY(-3px);
             box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
@@ -193,14 +193,20 @@
                 <input type="time" id="fim" name="fim">
             </div>
             
-            <div class="checkbox-container">
+            <div class="load-container">
                 <input type="checkbox" id="diaria" name="diaria">
                 <label for="diaria">Pausa Diária?</label>
             </div>
             
-            <button type="submit" class="btn-criar">Criar</button>
-        </form>
+            <button type="submit" class="btn-general">Criar</button>
+        
+            <div class="form-group">
+                <input type="time" id="load" name="load">
+            </div>
+			<button type="" class="btn-general">Carregar Pausas</button>        </form>
+        
         <br>
+        
         <section id="active-pauses">
             <h2 class="section-title">Pausas Ativas:</h2>
             <ul id="pauses-list"></ul>
