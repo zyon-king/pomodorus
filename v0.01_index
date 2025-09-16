@@ -53,19 +53,19 @@
             margin-bottom: 1.5rem;;
         }
 
-        .form-header {
+        .section-title {
             text-align: center;
             margin-bottom: 2rem;
         }
 
-        .form-header h1 {
+        .section-title h1 {
             font-size: 2.5rem;
             font-weight: 600;
             color: var(--cor-texto);
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.5rem;
             position: relative;
         }
 
@@ -175,7 +175,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="form-header">
+        <div class="section-title">
     		<h1>My Pomodorus</h1>
         </div>
         <form>
@@ -200,6 +200,11 @@
             
             <button type="submit" class="btn-criar">Criar</button>
         </form>
+        <br>
+        <section id="active-pauses">
+            <h2 class="section-title">Pausas Ativas:</h2>
+            <ul id="pauses-list"></ul>
+        </section>
     </div>
 
 </body>
