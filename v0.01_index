@@ -30,27 +30,41 @@
             color: var(--cor-texto);
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             text-rendering: optimizeLegibility;
         }
 
+        @keyframes slideFromTop {
+          from {
+            transform: translate(0, -100%); /* começa fora da tela */
+            opacity: 0;
+          }
+          to {
+            transform: translate(0, 1.0rem); /* posição normal */
+            opacity: 1;
+          }
+        }
+        
         .container {
-            background-color: var(--cor-principal);
-            padding: 3rem 2.5rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-            max-width: 500px;
-            width: 90%;
-            transition: var(--transicao-suave);
+          top: 0.5rem;
+          border-bottom: 5%;
+          animation: slideFromTop 0.6s ease forwards;
+          
+          background-color: var(--cor-principal);
+          padding: 3rem 2.5rem;
+          border-radius: 15px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+          max-width: 500px;
+          width: 90%;
         }
 
-        form {
+        form, .form-group {
             display: flex;
             flex-wrap: wrap; /* Quebrar linha em telas menores */
             justify-content: center;
-            gap: 1.5rem; /* Espaço entre os inputs */
-            margin-bottom: 1.5rem;;
+            gap: 0.5rem; /* Espaço entre os inputs */
+            margin-bottom: 0.5rem;;
         }
 
         .section-title {
@@ -79,7 +93,7 @@
 
         .form-group input[type="time"], .form-group input[type="text"] {
             width: ;
-            padding: 0.8rem 1rem;
+            padding: 0.5rem 1rem;
             background-color: var(--cor-fundo);
             border: 2px solid var(--cor-principal);
             border-radius: 8px;
@@ -149,7 +163,8 @@
         }
 
         .btn-general {
-            width: 30%;
+            width: 40%;
+            margin-bottom: 1.8rem;
             padding: 1rem;
             font-size: 1.1rem;
             font-weight: 600;
@@ -172,6 +187,15 @@
         .checkbox-container input[type="checkbox"]:not(:checked) ~ #input-fim-group #input-fim {
             display: block;
         }
+        
+        /* @media (max-width: 768px) {
+          .container {
+            padding: 2rem 1.5rem;
+            border-radius: 10px;
+            height: 90%;
+            max-height: 95%;
+          }
+        } */
     </style>
 </head>
 <body>
@@ -200,124 +224,20 @@
             </div>
             
             <button type="submit" class="btn-general">Criar</button>
-        
+
             <div class="form-group">
+                <label for="token">Token das Pausas:</label>
+                <input type="text" id="token" name="token">
+                <button type="" class="btn-general">Copiar</button>
+			    <button type="" class="btn-general">Fechar</button>
+            </div>
+			
+            <div class="form-group">
+                <label for="load">Carregar Pausas:</label>
                 <input type="text" id="load" name="load">
             </div>
-			<button type="" class="btn-general">Carregar Pausas</button>        </form>
-        
-        <br>
-        
-        <section id="active-pauses">
-            <h2 class="section-title">Pausas Ativas:</h2>
-            <ul id="pauses-list"></ul>
-        </section>
-    </div>
-
-</body>
-</html>            box-shadow: 0 0 0 3px rgba(153, 51, 102, 0.5);
-        }
-
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .checkbox-container input[type="checkbox"] {
-            margin-right: 0.75rem;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background-color: var(--cor-fundo);
-            border: 2px solid var(--cor-acento);
-            border-radius: 4px;
-            cursor: pointer;
-            position: relative;
-            transition: var(--transicao-suave);
-        }
-
-        .checkbox-container input[type="checkbox"]:checked {
-            background-color: var(--cor-acento);
-            border-color: var(--cor-acento);
-        }
-
-        .checkbox-container input[type="checkbox"]:checked::after {
-            content: '';
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 10px;
-            height: 10px;
-            background-color: var(--cor-texto);
-            border-radius: 2px;
-            transform: scale(1);
-            transition: var(--transicao-suave);
-        }
-
-        .checkbox-container label {
-            font-size: 1rem;
-            color: var(--cor-texto);
-            user-select: none;
-        }
-
-        .btn-general {
-            width: 30%;
-            padding: 1rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            background-color: var(--cor-secundaria);
-            color: var(--cor-texto);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: var(--transicao-suave);
-            box-shadow: var(--sombra-leve);
-        }
-
-        .btn-general:hover {
-            background-color: var(--cor-acento);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
-        }
-        
-        /* Mostra o campo 'Fim' quando o checkbox não estiver marcado */
-        .checkbox-container input[type="checkbox"]:not(:checked) ~ #input-fim-group #input-fim {
-            display: block;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="section-title">
-    		<h1>My Pomodorus</h1>
-        </div>
-        <form>
-            <div class="form-group">
-                <label for="inicio">Início</label>
-                <input type="time" id="inicio" name="inicio" required>
-            </div>
-            <div class="form-group">
-                <label for="duracao">Duração</label>
-                <input type="time" id="duracao" name="duracao" required>
-            </div>
-            
-            <div class="form-group" id="input-fim-group">
-                <label for="fim">Fim</label>
-                <input type="time" id="fim" name="fim">
-            </div>
-            
-            <div class="load-container">
-                <input type="checkbox" id="diaria" name="diaria">
-                <label for="diaria">Pausa Diária?</label>
-            </div>
-            
-            <button type="submit" class="btn-general">Criar</button>
-        
-            <div class="form-group">
-                <input type="time" id="load" name="load">
-            </div>
-			<button type="" class="btn-general">Carregar Pausas</button>        </form>
+			<button type="" class="btn-general">Carregar</button>        
+			</form>
         
         <br>
         
