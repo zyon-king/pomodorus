@@ -192,9 +192,29 @@
             box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
         }
         
-        /* Mostra o campo 'Fim' quando o checkbox não estiver marcado */
-        .checkbox-container input[type="checkbox"]:not(:checked) ~ #input-fim-group #input-fim {
-            display: block;
+        .remove-btn {
+            margin-left: 10px;
+            padding: 5px 10px;
+            background-color: var(--cor-secundaria);
+            color: var(--cor-texto);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background-color: #a04070;
+        }
+        
+        #pauses-list li {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #2b3a5b; /* Uma cor um pouco mais clara que o fundo */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         /* @media (max-width: 768px) {
@@ -384,18 +404,34 @@ function calcularDiferencaEmMinutos(start, end) {
 }
 
 function renderPausas() {
-    pausesList.innerHTML = '';
-    if (pausas.length === 0) {
-        pausesList.innerHTML = '<li>Nenhuma pausa ativa.</li>';
-        return;
-    }
+    pausesList.innerHTML = '';
+    if (pausas.length === 0) {
+        pausesList.innerHTML = '<li style="text-align: center;">Nenhuma pausa ativa.</li>';
+        return;
+    }
 
-    pausas.forEach(pausa => {
-        const li = document.createElement('li');
-        li.textContent = `${pausa.start} - ${pausa.end} (${pausa.duration})`;
-        pausesList.appendChild(li);
-    });
+    pausas.forEach((pausa, index) => { // Adicione o 'index' aqui
+        const li = document.createElement('li');
+        li.innerHTML = `
+            ${pausa.start} - ${pausa.end} (${pausa.duration})
+            <button class="remove-btn" data-index="${index}">Remover</button>
+        `;
+        pausesList.appendChild(li);
+    });
 }
+
+pausesList.addEventListener('click', (event) => {
+    // Verifica se o clique foi em um botão com a classe 'remove-btn'
+    if (event.target.classList.contains('remove-btn')) {
+        const index = event.target.dataset.index; // Obtém o índice do data attribute
+        
+        // Remove a pausa do array 'pausas' usando o índice
+        pausas.splice(index, 1);
+        
+        // Atualiza a lista exibida no HTML
+        renderPausas();
+    }
+});
 
 pausaForm.addEventListener('submit', (e) => {
     e.preventDefault();
