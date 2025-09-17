@@ -231,6 +231,8 @@
     <div class="container">
         <div class="section-title">
     		<h1>My Pomodorus</h1>
+            <h2 id="relogio">00:00:00</h2>
+
         </div>
         <form>
             <div class="form-group">
@@ -326,7 +328,19 @@
     fecharCarregarBtn.addEventListener('click', () => {
         carregarSection.style.display = 'none';
     });
+
+// ===================
+// Gerenciamento do Relógio
+// ===================
+function atualizarRelogio() {
+    const agora = new Date();
+    const horas = String(agora.getHours()).padStart(2, '0');
+    const minutos = String(agora.getMinutes()).padStart(2, '0');
+    const segundos = String(agora.getSeconds()).padStart(2, '0');
     
+    document.getElementById('relogio').textContent = `${horas}:${minutos}:${segundos}`;
+}
+
 // ===================
 // Gerenciamento da Interface
 // ===================
@@ -558,6 +572,11 @@ function init() {
     // Garante que o input de duração não esteja visível no início
     // Isso é opcional, mas garante que a interface comece no estado certo.
     toggleInputs();
+    
+    // Chama a função para exibir o relógio imediatamente
+    atualizarRelogio();
+    // Inicia a atualização do relógio a cada segundo
+    setInterval(atualizarRelogio, 1000);
 }
 
 // Chama a função de inicialização quando a página é carregada
