@@ -61,10 +61,10 @@
 
         form, .form-group {
             display: flex;
-            flex-wrap: wrap; /* Quebrar linha em telas menores */
-            justify-content: center;
-            gap: 0.5rem; /* Espaço entre os inputs */
-            margin-bottom: 0.5rem;;
+            flex-direction: column; /* Este é o ajuste chave */
+            align-items: center; /* Alinha os itens à esquerda */
+            gap: 0.5rem; /* Adiciona um pequeno espaço entre os itens */
+            margin-bottom: 0.5rem;
         }
 
         .section-title {
@@ -208,14 +208,27 @@
                 <label for="inicio">Início</label>
                 <input type="time" id="inicio" name="inicio" required>
             </div>
-            <div class="form-group">
-                <label for="duracao">Duração</label>
-                <input type="time" id="duracao" name="duracao" required>
-            </div>
             
-            <div class="form-group" id="input-fim-group">
+            <div class="form-group">
+                <label>Pausa até:</label>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <label>
+                        <input type="radio" id="radioFim" name="modoPausa" value="fim" checked> Fim
+                    </label>
+                    <label>
+                        <input type="radio" id="radioDuracao" name="modoPausa" value="duracao"> Duração
+                    </label>
+                </div>
+
+            <div class="" id="inputFimGroup">
                 <label for="fim">Fim</label>
                 <input type="time" id="fim" name="fim">
+            </div>
+
+            <div class="" id="inputDuracaoGroup" style="display: none;">
+                <label for="duracao">Duração</label>
+                <input type="time" id="duracao" name="duracao">
+            </div>
             </div>
             
             <div class="load-container">
@@ -238,8 +251,9 @@
                 <div class="form-group">
                     <label for="loadInput">Carregar Pausas:</label>
                     <input type="text" id="loadInput" name="load">
-                    <span>Cole seu token para carregar as pausas diárias.</span>
-                    <button type="button" class="btn-general" id="carregarBtn">Carregar</button>
+                    <p id="statusMessage" style="color:red; text-align:center; margin-top: 10px;"></p>
+
+					<button type="button" class="btn-general" id="carregarTokenBtn">Carregar</button>
                     <button type="button" class="btn-general" id="fecharCarregarBtn">Fechar</button>
                 </div>
             </div>
@@ -284,6 +298,199 @@
     fecharCarregarBtn.addEventListener('click', () => {
         carregarSection.style.display = 'none';
     });
+    
+// ===================
+// Gerenciamento da Interface
+// ===================
+const radioFim = document.getElementById('radioFim');
+const radioDuracao = document.getElementById('radioDuracao');
+const inputFimGroup = document.getElementById('inputFimGroup');
+const inputDuracaoGroup = document.getElementById('inputDuracaoGroup');
+const inicioInput = document.getElementById('inicio');
+
+// A função `toggleInputs` esconde ou mostra os campos de acordo com o rádio selecionado.
+function toggleInputs() {
+    if (radioFim.checked) {
+        inputFimGroup.style.display = 'block';
+        inputDuracaoGroup.style.display = 'none';
+        document.getElementById('duracao').value = '';
+    } else {
+        inputFimGroup.style.display = 'none';
+        inputDuracaoGroup.style.display = 'block';
+        document.getElementById('fim').value = '';
+    }
+}
+
+// Adiciona os event listeners aos botões de rádio para gerenciar a interface.
+radioFim.addEventListener('change', toggleInputs);
+radioDuracao.addEventListener('change', toggleInputs);
+
+// Também precisamos lidar com o cálculo da duração.
+// Esta é uma função auxiliar para calcular a duração a partir do tempo de início e duração.
+function calcularFimDeDuracao(inicio, duracao) {
+    if (!inicio || !duracao) return '';
+
+    const [startH, startM] = inicio.split(':').map(Number);
+    const [durationH, durationM] = duracao.split(':').map(Number);
+    
+    let totalMinutosInicio = startH * 60 + startM;
+    let totalMinutosDuracao = durationH * 60 + durationM;
+    let totalMinutosFim = totalMinutosInicio + totalMinutosDuracao;
+    
+    let endH = Math.floor(totalMinutosFim / 60) % 24;
+    let endM = totalMinutosFim % 60;
+
+    return `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+}
+
+// ===================
+// Gerenciamento de Pausas
+// ===================
+// Este é o bloco anterior, mas com ajustes para os novos inputs de rádio.
+// Certifique-se de que os IDs abaixo batem com os do seu HTML.
+const pausaForm = document.querySelector('form'); // Seleciona o primeiro form
+const pausesList = document.getElementById('pauses-list');
+const duracaoInput = document.getElementById('duracao');
+const fimInput = document.getElementById('fim');
+
+let pausas = []; // Array para armazenar os objetos de pausa
+
+function formatarTempo(minutos) {
+    const horas = Math.floor(minutos / 60);
+    const mins = minutos % 60;
+    return `${String(horas).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+}
+
+function calcularDiferencaEmMinutos(start, end) {
+    let [startH, startM] = start.split(':').map(Number);
+    let [endH, endM] = end.split(':').map(Number);
+    
+    let inicioMinutos = startH * 60 + startM;
+    let fimMinutos = endH * 60 + endM;
+
+    if (fimMinutos < inicioMinutos) {
+        fimMinutos += 24 * 60;
+    }
+
+    return fimMinutos - inicioMinutos;
+}
+
+function renderPausas() {
+    pausesList.innerHTML = '';
+    if (pausas.length === 0) {
+        pausesList.innerHTML = '<li>Nenhuma pausa ativa.</li>';
+        return;
+    }
+
+    pausas.forEach(pausa => {
+        const li = document.createElement('li');
+        li.textContent = `${pausa.start} - ${pausa.end} (${pausa.duration})`;
+        pausesList.appendChild(li);
+    });
+}
+
+pausaForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const inicio = inicioInput.value;
+    let fim = '';
+    let duracaoMinutos = 0;
+
+    if (radioFim.checked) {
+        fim = fimInput.value;
+        if (!inicio || !fim) {
+            alert('Por favor, preencha o início e o fim da pausa.');
+            return;
+        }
+        duracaoMinutos = calcularDiferencaEmMinutos(inicio, fim);
+    } else { // radioDuracao está marcado
+        const duracao = duracaoInput.value;
+        if (!inicio || !duracao) {
+            alert('Por favor, preencha o início e a duração da pausa.');
+            return;
+        }
+        fim = calcularFimDeDuracao(inicio, duracao);
+        duracaoMinutos = calcularDiferencaEmMinutos(inicio, fim);
+    }
+    
+    const novaPausa = {
+        start: inicio,
+        end: fim,
+        duration: formatarTempo(duracaoMinutos)
+    };
+    
+    pausas.push(novaPausa);
+    renderPausas();
+});
+
+// ===================
+// Geração e Processamento do Token
+// ===================
+const tokenInput = document.getElementById('tokenInput');
+const loadInput = document.getElementById('loadInput');
+const copiarBtn = document.getElementById('copiarBtn');
+const carregarTokenBtn = document.getElementById('carregarTokenBtn');
+const statusMessage = document.getElementById('statusMessage');
+
+function gerarToken() {
+    // Formato: hh:mm-hh:mm,hh:mm-hh:mm
+    const token = pausas.map(pausa => `${pausa.start}-${pausa.end}`).join(',');
+    tokenInput.value = token;
+}
+
+function processarToken(token) {
+    statusMessage.textContent = '';
+    const pausasString = token.split(',');
+    const novoArrayDePausas = [];
+
+    for (const pausaStr of pausasString) {
+        const partes = pausaStr.split('-');
+        if (partes.length !== 2) {
+            statusMessage.textContent = 'Erro: Padrão do token inválido.';
+            return null;
+        }
+
+        const [inicio, fim] = partes;
+        if (!/^\d{2}:\d{2}$/.test(inicio) || !/^\d{2}:\d{2}$/.test(fim)) {
+            statusMessage.textContent = 'Erro: Formato de horário inválido (esperado hh:mm).';
+            return null;
+        }
+
+        const duracaoMinutos = calcularDiferencaEmMinutos(inicio, fim);
+        novoArrayDePausas.push({
+            start: inicio,
+            end: fim,
+            duration: formatarTempo(duracaoMinutos),
+            diaria: false
+        });
+    }
+
+    return novoArrayDePausas;
+}
+
+copiarBtn.addEventListener('click', () => {
+    gerarToken();
+    tokenInput.select();
+    document.execCommand('copy');
+    statusMessage.textContent = 'Token copiado!';
+});
+
+carregarTokenBtn.addEventListener('click', () => {
+    const token = loadInput.value;
+    if (token) {
+        const novoArrayDePausas = processarToken(token);
+        if (novoArrayDePausas) {
+            pausas = novoArrayDePausas;
+            renderPausas();
+            statusMessage.textContent = 'Pausas carregadas com sucesso!';
+            statusMessage.style.color = 'green';
+        }
+    } else {
+        statusMessage.textContent = 'Por favor, insira um token para carregar.';
+        statusMessage.style.color = 'red';
+    }
+});
+
 </script>
 </body>
 </html>
