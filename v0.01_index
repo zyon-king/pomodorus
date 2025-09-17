@@ -444,21 +444,35 @@ const copiarBtn = document.getElementById('copiarBtn');
 const carregarTokenBtn = document.getElementById('carregarTokenBtn');
 const statusMessage = document.getElementById('statusMessage');
 
+// Função para gerar o token com o novo padrão.
 function gerarToken() {
-    // Formato: hh:mm-hh:mm,hh:mm-hh:mm
-    const token = pausas.map(pausa => `${pausa.start}-${pausa.end}`).join(',');
+    const pausasString = pausas.map(pausa => `${pausa.start}-${pausa.end}`).join(',');
+    const token = `MyPomodorys(${pausasString})`;
     tokenInput.value = token;
 }
 
+// A função de processamento também precisa ser ajustada para remover o prefixo.
 function processarToken(token) {
     statusMessage.textContent = '';
-    const pausasString = token.split(',');
+    const prefixo = 'MyPomodorys(';
+    const sufixo = ')';
+
+    // 1. Validar se o token começa e termina com o padrão esperado.
+    if (!token.startsWith(prefixo) || !token.endsWith(sufixo)) {
+        statusMessage.textContent = 'Erro: Padrão do token inválido. Certifique-se de que o token começa com "MyPomodorys(...)".';
+        return null;
+    }
+
+    // 2. Extrair a parte do padrão que contém as pausas.
+    const pausasToken = token.substring(prefixo.length, token.length - sufixo.length);
+    const pausasString = pausasToken.split(',');
     const novoArrayDePausas = [];
 
+    // O resto da lógica de validação e processamento permanece igual.
     for (const pausaStr of pausasString) {
         const partes = pausaStr.split('-');
         if (partes.length !== 2) {
-            statusMessage.textContent = 'Erro: Padrão do token inválido.';
+            statusMessage.textContent = 'Erro: Padrão de pausa inválido. Esperado "hh:mm-hh:mm".';
             return null;
         }
 
@@ -472,8 +486,7 @@ function processarToken(token) {
         novoArrayDePausas.push({
             start: inicio,
             end: fim,
-            duration: formatarTempo(duracaoMinutos),
-            diaria: false
+            duration: formatarTempo(duracaoMinutos)
         });
     }
 
