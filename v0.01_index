@@ -231,12 +231,15 @@
                 <button type="" class="btn-general">Copiar</button>
 			    <button type="" class="btn-general">Fechar</button>
             </div>
+			<button type="" class="btn-general">Salvar Pausas</button>
 			
             <div class="form-group">
                 <label for="load">Carregar Pausas:</label>
                 <input type="text" id="load" name="load">
+                <button type="" class="btn-general">Carregar</button>
+			    <button type="" class="btn-general">Fechar</button>
             </div>
-			<button type="" class="btn-general">Carregar</button>        
+			<button type="" class="btn-general">Carregar Pausas</button>        
 			</form>
         
         <br>
