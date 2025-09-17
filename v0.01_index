@@ -548,6 +548,21 @@ carregarTokenBtn.addEventListener('click', () => {
     }
 });
 
+// ===================
+// Nova Função de Inicialização
+// ===================
+function init() {
+    // Exibe a mensagem inicial de "Nenhuma pausa ativa"
+    renderPausas();
+
+    // Garante que o input de duração não esteja visível no início
+    // Isso é opcional, mas garante que a interface comece no estado certo.
+    toggleInputs();
+}
+
+// Chama a função de inicialização quando a página é carregada
+init();
+
 </script>
 </body>
 </html>
