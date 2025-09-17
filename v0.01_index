@@ -62,7 +62,7 @@
         form, .form-group {
             display: flex;
             flex-direction: column; /* Este é o ajuste chave */
-            align-items: center; /* Alinha os itens à esquerda */
+            align-items: center;
             gap: 0.5rem; /* Adiciona um pequeno espaço entre os itens */
             margin-bottom: 0.5rem;
         }
@@ -161,7 +161,13 @@
             color: var(--cor-texto);
             user-select: none;
         }
-
+        
+        .buttons {
+            display: flex;
+            justify-content: center; /* Centraliza os botões horizontalmente */
+            gap: 1rem; /* Adiciona um espaço de 16px entre os botões */
+        }
+        
         .btn-general {
             width: 40%;
             margin-bottom: 1.8rem;
@@ -242,8 +248,10 @@
                 <div class="form-group">
                     <label for="tokenInput">Token das Pausas:</label>
                     <input type="text" id="tokenInput" name="token">
+					<section class="buttons">
                     <button type="button" class="btn-general" id="copiarBtn">Copiar</button>
                     <button type="button" class="btn-general" id="fecharSalvarBtn">Fechar</button>
+					</section>
                 </div>
             </div>
     
@@ -252,15 +260,19 @@
                     <label for="loadInput">Carregar Pausas:</label>
                     <input type="text" id="loadInput" name="load">
                     <p id="statusMessage" style="color:red; text-align:center; margin-top: 10px;"></p>
-
+					<section class="buttons">
 					<button type="button" class="btn-general" id="carregarTokenBtn">Carregar</button>
                     <button type="button" class="btn-general" id="fecharCarregarBtn">Fechar</button>
+                    </section>
+
                 </div>
             </div>
             
+            <section class="buttons">
             <button type="button" class="btn-general" id="salvarPausasBtn">Salvar Pausas</button>
 
             <button type="button" class="btn-general" id="carregarPausasBtn">Carregar Pausas</button>
+            </section>
             
 			</form>
         
