@@ -225,14 +225,29 @@
             
             <button type="submit" class="btn-general">Criar</button>
 
-            <div class="form-group">
-                <label for="link">Link das Pausas Diárias:</label>
-                <input type="text" id="link" name="link">
-                <button type="" class="btn-general">Copiar</button>
-			    <button type="" class="btn-general">Fechar</button>
+            <div id="salvarPausasSection" style="display:none;">
+                <div class="form-group">
+                    <label for="tokenInput">Token das Pausas:</label>
+                    <input type="text" id="tokenInput" name="token">
+                    <button type="button" class="btn-general" id="copiarBtn">Copiar</button>
+                    <button type="button" class="btn-general" id="fecharSalvarBtn">Fechar</button>
+                </div>
             </div>
-			<button type="" class="btn-general">Salvar Pausas</button>
-			
+    
+            <div id="carregarPausasSection" style="display:none;">
+                <div class="form-group">
+                    <label for="loadInput">Carregar Pausas:</label>
+                    <input type="text" id="loadInput" name="load">
+                    <span>Cole seu token para carregar as pausas diárias.</span>
+                    <button type="button" class="btn-general" id="carregarBtn">Carregar</button>
+                    <button type="button" class="btn-general" id="fecharCarregarBtn">Fechar</button>
+                </div>
+            </div>
+            
+            <button type="button" class="btn-general" id="salvarPausasBtn">Salvar Pausas</button>
+
+            <button type="button" class="btn-general" id="carregarPausasBtn">Carregar Pausas</button>
+            
 			</form>
         
         <br>
@@ -242,6 +257,33 @@
             <ul id="pauses-list"></ul>
         </section>
     </div>
+    
+<script>
+    const salvarBtn = document.getElementById('salvarPausasBtn');
+    const carregarBtn = document.getElementById('carregarPausasBtn');
+    const salvarSection = document.getElementById('salvarPausasSection');
+    const carregarSection = document.getElementById('carregarPausasSection');
 
+    const fecharSalvarBtn = document.getElementById('fecharSalvarBtn');
+    const fecharCarregarBtn = document.getElementById('fecharCarregarBtn');
+
+    salvarBtn.addEventListener('click', () => {
+        salvarSection.style.display = 'block';
+        carregarSection.style.display = 'none';
+    });
+
+    carregarBtn.addEventListener('click', () => {
+        carregarSection.style.display = 'block';
+        salvarSection.style.display = 'none';
+    });
+
+    fecharSalvarBtn.addEventListener('click', () => {
+        salvarSection.style.display = 'none';
+    });
+
+    fecharCarregarBtn.addEventListener('click', () => {
+        carregarSection.style.display = 'none';
+    });
+</script>
 </body>
 </html>
