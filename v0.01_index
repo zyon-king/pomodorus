@@ -28,10 +28,13 @@
             font-family: 'Poppins', sans-serif;
             background-color: var(--cor-fundo);
             color: var(--cor-texto);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            display: flex; /* Makes the body a flex container */
+            flex-direction: column; /* Stacks children vertically */
+            justify-content: flex-start; /* Aligns children to the start of the flex container */
+            align-items: center; /* Centers children horizontally */
             min-height: 100vh;
+            margin: 0; /* Remove default body margin */
+            padding: 0; /* Remove default body padding */
             text-rendering: optimizeLegibility;
         }
 
@@ -217,6 +220,19 @@
             align-items: center;
         }
         
+        /* Estilos do Footer */
+        footer {
+            justify-content: center;
+            width: 100%;
+            padding: 15px 0;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            font-size: 0.9em;
+            color: white;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+            margin-top: 2rem; /* Pushes the footer to the bottom of the flex container */
+        }
+        
         /* @media (max-width: 768px) {
           .container {
             padding: 2rem 1.5rem;
@@ -299,7 +315,11 @@
             <h2 class="section-title">Pausas Ativas:</h2>
             <ul id="pauses-list"></ul>
         </section>
-    </div>
+    </div>    
+
+    <footer>
+        <p>&copy; 2025 MyPomodorus. Todos os direitos reservados - ZyonKing | Fontanari,C.</p>
+    </footer>
     
 <script>
     const salvarBtn = document.getElementById('salvarPausasBtn');
@@ -592,7 +612,7 @@ function init() {
     // Chama a função para exibir o relógio imediatamente
     atualizarRelogio();
     // Inicia a atualização do relógio a cada segundo
-    setInterval(atualizarRelogio, 1000);
+    // setInterval(atualizarRelogio, 1000);
 }
 
 // Chama a função de inicialização quando a página é carregada
