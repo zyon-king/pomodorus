@@ -169,7 +169,7 @@
         }
         
         .btn-general {
-            width: 40%;
+            width: 50%;
             margin-bottom: 1.8rem;
             padding: 1rem;
             font-size: 1.1rem;
@@ -181,6 +181,9 @@
             cursor: pointer;
             transition: var(--transicao-suave);
             box-shadow: var(--sombra-leve);
+
+            /* Adicione esta linha: */
+            white-space: nowrap; 
         }
 
         .btn-general:hover {
@@ -255,8 +258,7 @@
                 </div>
             </div>
     
-            <div id="carregarPausasSection" style="display:none;">
-                <div class="form-group">
+            <div class="form-group" id="carregarPausasSection" style="display:none;">
                     <label for="loadInput">Carregar Pausas:</label>
                     <input type="text" id="loadInput" name="load">
                     <p id="statusMessage" style="color:red; text-align:center; margin-top: 10px;"></p>
@@ -264,9 +266,7 @@
 					<button type="button" class="btn-general" id="carregarTokenBtn">Carregar</button>
                     <button type="button" class="btn-general" id="fecharCarregarBtn">Fechar</button>
                     </section>
-
-                </div>
-            </div>
+          	</div>
             
             <section class="buttons">
             <button type="button" class="btn-general" id="salvarPausasBtn">Salvar Pausas</button>
