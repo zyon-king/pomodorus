@@ -229,20 +229,15 @@
                     </label>
                 </div>
 
-            <div class="" id="inputFimGroup">
-                <label for="fim">Fim</label>
-                <input type="time" id="fim" name="fim">
-            </div>
+                <div class="" id="inputFimGroup">
+                    <label for="fim">Fim</label>
+                    <input type="time" id="fim" name="fim">
+                </div>
 
-            <div class="" id="inputDuracaoGroup" style="display: none;">
-                <label for="duracao">Duração</label>
-                <input type="time" id="duracao" name="duracao">
-            </div>
-            </div>
-            
-            <div class="load-container">
-                <input type="checkbox" id="diaria" name="diaria">
-                <label for="diaria">Pausa Diária?</label>
+                <div class="" id="inputDuracaoGroup" style="display: none;">
+                    <label for="duracao">Duração</label>
+                    <input type="time" id="duracao" name="duracao">
+                </div>
             </div>
             
             <button type="submit" class="btn-general">Criar</button>
@@ -296,6 +291,7 @@
     salvarBtn.addEventListener('click', () => {
         salvarSection.style.display = 'block';
         carregarSection.style.display = 'none';
+        gerarToken();
     });
 
     carregarBtn.addEventListener('click', () => {
