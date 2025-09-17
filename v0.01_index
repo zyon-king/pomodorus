@@ -9,11 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --cor-principal: #334466; /* Azul Marinho Escuro */
+            --cor-principal: linear-gradient(-135deg, #171627, #111d4a, #171627, #111d4a);
             --cor-secundaria: #660033; /* Vinho Escuro */
             --cor-acento: #993366; /* Tom mais claro de Vinho */
-            --cor-texto: #f0f0f0; /* Cinza claro para o texto */
-            --cor-fundo: #1a1a2e; /* Fundo bem escuro */
+            --cor-texto: #00ccff; /* Azul neon */
+            --cor-fundo: linear-gradient(135deg, #000000, #3b0047, #660000, #000000); /* Gradiente de fundo */
             --sombra-leve: 0 4px 6px rgba(0, 0, 0, 0.2);
             --transicao-suave: all 0.3s ease-in-out;
         }
@@ -26,7 +26,7 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: var(--cor-fundo);
+            background-image: var(--cor-fundo);
             color: var(--cor-texto);
             display: flex; /* Makes the body a flex container */
             flex-direction: column; /* Stacks children vertically */
@@ -54,9 +54,10 @@
           border-bottom: 5%;
           animation: slideFromTop 0.6s ease forwards;
           
-          background-color: var(--cor-principal);
+          background-image: var(--cor-principal);
           padding: 3rem 2.5rem;
           border-radius: 15px;
+          border: 3px solid rgba(255, 255, 255, 0.2);
           box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
           max-width: 500px;
           width: 90%;
@@ -97,7 +98,7 @@
         .form-group input[type="time"], .form-group input[type="text"] {
             width: ;
             padding: 0.5rem 1rem;
-            background-color: var(--cor-fundo);
+            background-image: var(--cor-fundo);
             border: 2px solid var(--cor-principal);
             border-radius: 8px;
             color: var(--cor-texto);
