@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Pomodorus</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto+Mono:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --cor-principal: linear-gradient(-135deg, #171627, #111d4a, #171627, #111d4a);
@@ -25,9 +23,10 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Orbitron', sans-serif;
             background-image: var(--cor-fundo);
             color: var(--cor-texto);
+            .text-shadow: 0 0 3px rgba(0, 255, 204, 0.8), 0 0 0.5px rgba(0, 255, 204, 0.6);
             display: flex; /* Makes the body a flex container */
             flex-direction: column; /* Stacks children vertically */
             justify-content: flex-start; /* Aligns children to the start of the flex container */
@@ -176,7 +175,8 @@
             width: 50%;
             margin-bottom: 1.8rem;
             padding: 1rem;
-            font-size: 1.1rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
             font-weight: 600;
             background-color: var(--cor-secundaria);
             color: var(--cor-texto);
@@ -258,7 +258,6 @@
             </div>
             
             <div class="form-group">
-                <label>Pausa até:</label>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                     <label>
                         <input type="radio" id="radioFim" name="modoPausa" value="fim" checked> Fim
@@ -268,12 +267,12 @@
                     </label>
                 </div>
 
-                <div class="" id="inputFimGroup">
+                <div class="form-group" id="inputFimGroup">
                     <label for="fim">Fim</label>
                     <input type="time" id="fim" name="fim">
                 </div>
 
-                <div class="" id="inputDuracaoGroup" style="display: none;">
+                <div class="form-group" id="inputDuracaoGroup" style="display: none;">
                     <label for="duracao">Duração</label>
                     <input type="time" id="duracao" name="duracao">
                 </div>
