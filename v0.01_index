@@ -772,13 +772,12 @@ function atualizarRelogio() {
     
     // Usamos um loop reverso para que a remoção de itens não cause problemas com o índice
     for (let i = pausas.length - 1; i >= 0; i--) {
-        if (pausas[i].start === horaAtual && segundos === '00') {
+        if (pausas[i].end === horaAtual && segundos === '00') {
             // Tocar o alarme
             playNotificationSound();
-            console.log('Alarme! É hora da sua pausa.');
-            // Adicione aqui a sua lógica para tocar o som ou exibir um alerta
+            console.log('Alarme! Fim da pausa.');
             
-            // Opcional: remover a pausa para que o alarme não toque novamente
+            // Remover a pausa para que o alarme não toque novamente
             pausas.splice(i, 1);
             renderPausas(); // Re-renderiza a lista sem a pausa que já tocou
         }
