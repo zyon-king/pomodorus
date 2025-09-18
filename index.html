@@ -604,7 +604,6 @@
     salvarBtn.addEventListener('click', () => {
         salvarSection.style.display = 'block';
         carregarSection.style.display = 'none';
-        gerarToken();
     });
 
     carregarBtn.addEventListener('click', () => {
@@ -929,6 +928,7 @@ pausaForm.addEventListener('submit', (e) => {
     
     pausas.push(novaPausa);
     renderPausas();
+    gerarToken();
 });
 
 // ===================
