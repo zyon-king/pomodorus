@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Pomodorus</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto+Mono:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
     <style>
         :root {
             --cor-principal: linear-gradient(-135deg, #171627, #111d4a, #171627, #111d4a);
@@ -221,6 +223,45 @@
             align-items: center;
         }
         
+                
+        /* --- Modal para Popup --- */
+        .popup-modal-overlay {
+            position: fixed; /* Fixa o elemento na janela de visualização */
+            top: 0; /* Começa no topo da tela */
+            left: 0;
+            width: 100%; /* Ocupa toda a largura */
+            height: 100%; /* Ocupa toda a altura da viewport */
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center; /* Centraliza o conteúdo (config-modal-content) horizontalmente */
+            align-items: flex-start; /* Alinha o conteúdo (config-modal-content) no topo */
+            z-index: 200;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease-in-out;
+        }
+
+        .popup-modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Você também pode precisar ajustar o gist-modal-content para não ter margem superior extra */
+        .popup-modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 90%; /* Ajusta a largura para ser responsiva, por exemplo, 90% */
+            max-width: 400px; /* Mantém uma largura máxima para não ficar muito largo em telas grandes */
+            height: auto; /* Permite que a altura se ajuste ao conteúdo */
+            text-align: center; /* Centraliza o texto dentro do modal */
+            margin-top: 5%; /* Adiciona uma margem do topo para que não cole na parte superior da tela */
+            margin-bottom: 5%; /* Adiciona margem na parte inferior para respiro */
+            overflow-y: auto; /* Adiciona rolagem se o conteúdo exceder a altura do modal */
+            /* Remove 'max-width: 400px;' se você já tiver no .config-modal-content */
+        }
+        
         /* Estilos do Footer */
         footer {
             justify-content: center;
@@ -242,6 +283,200 @@
             max-height: 95%;
           }
         } */
+        
+        /* --- Ajuste para o volume --- */
+        .volume-container {
+            margin-bottom: 20px; /* Espaço abaixo do botão de volume */
+            display: flex; /* Para centralizar o botão de volume dentro do container */
+            justify-content: center;
+            align-items: center;
+            flex-direction: column; /* Para empilhar o botão e os controles */
+    		transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        /* Nova regra CSS: Aplica a borda e sombra quando a classe `has-controls-active` está presente */
+        .volume-container.has-controls-active {        
+            background-color: #f8f8f8; /* Um fundo suave para os controles */
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1); /* Sombra interna para profundidade */
+            border-radius: 12px; /* Arredonde as bordas para combinar */
+            padding: 10px; /* Adicione um padding para a borda não encostar no conteúdo */
+            
+            /*border: 2px solid #00ccff; Cor da borda neon, por exemplo */            
+            /*box-shadow: 0 0 15px rgba(0, 204, 255, 0.5), Sombra neon azul */
+                        /* inset 0 0 8px rgba(0, 204, 255, 0.3);  Sombra interna neon */
+        }
+        .volume-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        .volume-button:hover {
+            background-color: #0056b3;
+        }
+
+        .volume-controls {
+            display: none;
+            margin-top: 20px;
+            padding-top: 15px;
+            animation: fadeIn 0.3s ease-in-out forwards;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .volume-controls.active {
+            position: relative;
+            display: flex;/* Adicione um fundo e padding para que pareça uma "camada" dentro do modal */
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mute-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: auto;
+            max-width: 200px;
+            background-color: ;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 24px;
+            top: 5px;
+            left: 5px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(16px);
+            -ms-transform: translateX(16px);
+            transform: translateX(16px);
+        }
+
+        .volume-slider-container {
+            /* Define este container como flex para alinhar seus filhos (volume-adjust-buttons) */
+            display: flex;
+            justify-content: center; /* Centraliza a div volume-adjust-buttons horizontalmente */
+            align-items: center; /* Alinha verticalmente se houver diferença de altura */
+            width: 100%;
+            max-width: 300px; /* Define uma largura máxima para o conjunto slider + botões */
+            margin: 0 auto; /* Centraliza o volume-slider-container dentro de seu pai */
+        }
+
+        .volume-adjust-buttons {
+            /* Transforma esta div em um flex container para seus próprios filhos (botões e slider) */
+            display: flex;
+            align-items: center; /* Alinha os botões e o slider verticalmente */
+            gap: 10px; /* Espaçamento entre os elementos (botão -, slider, botão +) */
+            width: 100%; /* Garante que ela ocupe a largura total do volume-slider-container */
+        }
+
+        .volume-slider {
+            flex-grow: 1; /* Permite que o slider ocupe o espaço restante, centralizando-se */
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+        }
+
+        .volume-adjust-buttons button {
+            /* Estilos para os botões - e + (agora com ícones) */
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 40px; /* Largura para os botões */
+            height: 40px; /* Altura para os botões */
+            font-size: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex; /* Para centralizar o ícone dentro do botão */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .volume-adjust-buttons button:hover {
+            background-color: #5a6268;
+        }
     </style>
 </head>
 <body>
@@ -251,6 +486,29 @@
             <h2 id="relogio">00:00:00</h2>
 
         </div>
+        
+        <div class="volume-container">
+            <button id="volumeButton" class="volume-button">
+                <i class="material-icons">volume_up</i>
+            </button>
+            <div id="volumeControls" class="volume-controls">
+                <div class="mute-switch">
+                    <span>Mudo</span>
+                    <label class="switch">
+                        <input type="checkbox" id="muteToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="volume-slider-container">
+                    <div class="volume-adjust-buttons">
+                        <button id="volumeDown"><i class="material-icons">volume_mute</i></button>
+                        <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="50">
+                        <button id="volumeUp"><i class="material-icons">volume_up</i></button>
+                    </div>
+                </div>            <spam>Manter esse audio tocando impede o navegador de suspender a pagina e bloquear o toque do alarme.</spam>
+            </div>
+        </div>
+        
         <form>
             <div class="form-group">
                 <label for="inicio">Início</label>
@@ -280,15 +538,14 @@
             
             <button type="submit" class="btn-general">Criar</button>
 
-            <div id="salvarPausasSection" style="display:none;">
-                <div class="form-group">
+            <div class="form-group" id="salvarPausasSection" style="display:none;">
                     <label for="tokenInput">Token das Pausas:</label>
                     <input type="text" id="tokenInput" name="token">
+                    <p id="statusMessage" style="color:red; text-align:center; margin-top: 10px;"></p>
 					<section class="buttons">
                     <button type="button" class="btn-general" id="copiarBtn">Copiar</button>
                     <button type="button" class="btn-general" id="fecharSalvarBtn">Fechar</button>
 					</section>
-                </div>
             </div>
     
             <div class="form-group" id="carregarPausasSection" style="display:none;">
@@ -317,11 +574,25 @@
         </section>
     </div>    
 
+    <div class="popup-modal-overlay" id="popup-modal-overlay">
+        <div class="popup-modal-content">
+            <h3>Toque do alarme iniciado.</h3>
+            
+            <div class="buttons">
+                <button id="popup-modal-stop-alarm" class="btn-general">Parar</button>                
+        	</div>
+        </div>
+	</div>
+	
     <footer>
         <p>&copy; 2025 MyPomodorus. Todos os direitos reservados - ZyonKing | Fontanari,C.</p>
     </footer>
-    
 <script>
+    const mainAudio = new Audio('https://raw.githubusercontent.com/w3teal/awesome-ringtone/main/Google%20Pixel/2021%20-%20Your%20New%20Adventure.mp3');
+        
+    const notificationSound = new Audio('https://github.com/w3teal/awesome-ringtone/raw/refs/heads/main/Vivo/2022%20-%20Indomitable%20will.mp3'); // Certifique-se de ter um arquivo notification.mp3
+    notificationSound.loop = true;
+    
     const salvarBtn = document.getElementById('salvarPausasBtn');
     const carregarBtn = document.getElementById('carregarPausasBtn');
     const salvarSection = document.getElementById('salvarPausasSection');
@@ -337,6 +608,7 @@
     });
 
     carregarBtn.addEventListener('click', () => {
+        mainAudio.play();
         carregarSection.style.display = 'block';
         salvarSection.style.display = 'none';
     });
@@ -349,6 +621,142 @@
         carregarSection.style.display = 'none';
     });
 
+        // ==========================================================
+        // TOCAR AUDIO PARA MANTER ATIVIDADE DA PAGINA:
+        // ==========================================================       
+        // Rewind to the beginning
+        mainAudio.addEventListener('ended', () => {
+            mainAudio.currentTime = 0; // Volta para o início
+            mainAudio.play()          // Toca novamente
+                .then(() => {
+                    console.log('Áudio terminou e foi reiniciado por mainAudio.addEventListener().');
+                    // Você pode adicionar um appendLog aqui se quiser registrar cada reinício
+                })
+                .catch(error => {
+                    console.error('Erro ao reiniciar áudio manualmente:', error.message);
+                    consoleLog(`Erro ao reiniciar áudio: ${error.message}.`, "error");
+                });
+        });
+        
+        const volumeContainer = document.querySelector('.volume-container');
+        const volumeButton = document.getElementById('volumeButton');
+        const volumeControls = document.getElementById('volumeControls');
+        const muteToggle = document.getElementById('muteToggle');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeDownButton = document.getElementById('volumeDown');
+        const volumeUpButton = document.getElementById('volumeUp');
+        
+        const volumeDownIcon = volumeDownButton.querySelector('.material-icons');
+        const volumeUpIcon = volumeUpButton.querySelector('.material-icons');
+        
+        const volumeIcon = volumeButton.querySelector('.material-icons');
+
+        let currentVolume = 50; // Initial volume
+
+        // Function to update the volume icon based on current volume and mute state
+        function updateVolumeIcon() {
+            if (muteToggle.checked) {
+                volumeDownIcon.textContent = 'volume_off';
+            } else if (currentVolume === 0) {
+                volumeDownIcon.textContent = 'volume_mute';
+            } else if (currentVolume > 0 && currentVolume < 50) {
+                volumeUpIcon.textContent = 'volume_down';
+                volumeDownIcon.textContent = 'volume_mute';
+            } else {
+                volumeUpIcon.textContent = 'volume_up';
+                volumeDownIcon.textContent = 'volume_mute';
+            }
+        }
+
+        // Toggle volume controls visibility
+        volumeButton.addEventListener('click', () => {
+            // Primeiro, alternamos a classe 'active'
+            volumeControls.classList.toggle('active');
+
+            // Depois, verificamos se a classe 'active' AGORA está presente
+            if (volumeControls.classList.contains('active')) {
+                volumeIcon.textContent = 'close'; // Ícone 'close' (um 'X')
+        		volumeContainer.classList.add('has-controls-active');
+            } else {
+                // Se a camada foi fechada, restaura o ícone de volume apropriado
+                // É melhor chamar updateVolumeIcon() aqui, 
+                // pois ela considera o volume atual e estado de mudo.
+                // Se você apenas definir para 'volume_up', 
+                // pode estar incorreto se o volume estiver mutado ou baixo.             
+                volumeIcon.textContent = 'volume_up';
+        		volumeContainer.classList.remove('has-controls-active'); // Remove a borda
+            }
+        });
+        
+        // Mute toggle functionality
+        muteToggle.addEventListener('change', () => {
+            if (muteToggle.checked) {
+                // Define o volume para um valor muito baixo (por exemplo, 0.01) em vez de mutar
+                mainAudio.volume = 0.004; // Quase inaudível
+                mainAudio.muted = false; // Garante que não esteja explicitamente mutado
+
+                volumeSlider.dataset.previousValue = volumeSlider.value; // Armazena o volume atual do slider
+                volumeSlider.value = 0; // Move o slider para 0 para indicar "quase mutado"
+                updateVolumeIcon();
+            } else {
+                mainAudio.muted = false; // Garante que não esteja mutado
+                // Restaura o volume para o valor anterior ou o volume padrão (currentVolume)
+                mainAudio.volume = (volumeSlider.dataset.previousValue || currentVolume) / 100; // Divide por 100 se o slider for de 0-100
+
+                volumeSlider.value = volumeSlider.dataset.previousValue || currentVolume; // Restaura o valor do slider
+                updateVolumeIcon();
+            }
+            currentVolume = parseInt(volumeSlider.value);
+        });
+
+        // Volume slider functionality
+        volumeSlider.addEventListener('input', () => {            
+            mainAudio.muted = false;
+            currentVolume = parseInt(volumeSlider.value);
+            muteToggle.checked = currentVolume === 0; // Mute if slider is at 0       
+        	mainAudio.volume = parseInt(volumeSlider.value) / 100;
+            updateVolumeIcon();
+        });
+        
+        // Volume down button
+        volumeDownButton.addEventListener('click', () => {
+            // Garante que o volume não desça abaixo de 0
+            if (currentVolume > 0) {
+                // Diminui o volume em 2, com um mínimo de 0
+                currentVolume = Math.max(0, currentVolume - 8);
+
+                // Atualiza o slider
+                volumeSlider.value = currentVolume;
+
+                // Define o volume do áudio
+                // Se currentVolume for 0, definimos para um valor muito baixo (quase inaudível)
+                if (currentVolume === 0) {
+                    mainAudio.volume = 0.004; // Quase inaudível
+                } else {
+                    mainAudio.volume = currentVolume / 100; // Converte para a escala de 0 a 1
+                }
+
+                // Se o volume chegar a 0, ou quase inaudível, marca o muteToggle
+                // Você pode ajustar 0.01 se quiser um limiar diferente
+                muteToggle.checked = currentVolume === 0.004; // Marca como "mutado" visualmente se o volume chegar a 0
+
+                updateVolumeIcon();
+            }
+        });
+
+        // Volume up button
+        volumeUpButton.addEventListener('click', () => {
+			mainAudio.muted = false;
+            if (currentVolume < 100) {
+                currentVolume = Math.min(100, currentVolume + 8); // Increase by 10, max 100
+                volumeSlider.value = currentVolume;
+                mainAudio.volume = parseInt(volumeSlider.value) / 100; // ADICIONE ESTA LINHA
+                muteToggle.checked = false; // Unmute if increasing volume
+                updateVolumeIcon();
+            }
+            	
+        });
+        
 // ===================
 // Gerenciamento do Relógio
 // ===================
@@ -367,6 +775,7 @@ function atualizarRelogio() {
     for (let i = pausas.length - 1; i >= 0; i--) {
         if (pausas[i].start === horaAtual && segundos === '00') {
             // Tocar o alarme
+            playNotificationSound();
             console.log('Alarme! É hora da sua pausa.');
             // Adicione aqui a sua lógica para tocar o som ou exibir um alerta
             
@@ -387,14 +796,17 @@ const inputDuracaoGroup = document.getElementById('inputDuracaoGroup');
 const inicioInput = document.getElementById('inicio');
 
 // A função `toggleInputs` esconde ou mostra os campos de acordo com o rádio selecionado.
+// CÓDIGO CORRIGIDO
 function toggleInputs() {
     if (radioFim.checked) {
-        inputFimGroup.style.display = 'block';
+        // Altere 'block' para 'flex'
+        inputFimGroup.style.display = 'flex'; 
         inputDuracaoGroup.style.display = 'none';
         document.getElementById('duracao').value = '';
     } else {
         inputFimGroup.style.display = 'none';
-        inputDuracaoGroup.style.display = 'block';
+        // Altere 'block' para 'flex'
+        inputDuracaoGroup.style.display = 'flex';
         document.getElementById('fim').value = '';
     }
 }
@@ -485,6 +897,8 @@ pausesList.addEventListener('click', (event) => {
 
 pausaForm.addEventListener('submit', (e) => {
     e.preventDefault();
+    
+    mainAudio.play();
 
     const inicio = inicioInput.value;
     let fim = '';
@@ -598,6 +1012,61 @@ carregarTokenBtn.addEventListener('click', () => {
     }
 });
 
+const popupModalOverlay = document.getElementById('popup-modal-overlay');
+        const popupModalStopAlarmButton = document.getElementById('popup-modal-stop-alarm');
+        
+		// Inicia toque alarma, para atividade fundo
+        function playNotificationSound() {
+
+            popupModalOverlay.classList.add('active');
+            if (notificationSound) {
+                // Pause o mainAudio temporariamente para a notificação ter prioridade
+                mainAudio.pause();
+                mainAudio.currentTime = 0; // Opcional, para recomeçar do zero depois
+
+                notificationSound.play().catch(e => console.error("Erro ao tocar o som da notificação:", e));
+            }
+        }
+
+        // botão 'Parar' do popup
+        popupModalStopAlarmButton.addEventListener('click', () => {
+            notificationSound.pause(); // <--- Pause o som da notificação
+            notificationSound.currentTime = 0; // <--- Opcional: Reinicia o som da notificação
+
+            // Reinicia a atividade em segundo plano APÓS o som da notificação ter parado
+            mainAudio.play()
+	        	.then(() => {
+	        	    appendLog("Áudio iniciado (em loop).", "success");
+	        	})
+	        	.catch(error => {
+	        	    // Handle cases where autoplay is blocked or other errors occur
+	        	    appendLog(`Erro ao iniciar áudio: ${error.message}. O áudio requer interação do usuário.`, "error");
+	        	    // If audio fails to play, don't start the counter (or handle it differently)
+	        	    appendLog("A atividade em segundo plano não foi iniciada devido ao erro do áudio.", "error");
+	        	}); 
+
+            popupModalOverlay.classList.remove('active');
+        });
+
+        // fechar o popup clicando fora
+        popupModalOverlay.addEventListener('click', (event) => {
+            if (event.target === popupModalOverlay) {
+                notificationSound.pause(); // <--- Pause o som da notificação
+                notificationSound.currentTime = 0; // <--- Opcional: Reinicia o som da notificação
+                popupModalOverlay.classList.remove('active');
+                mainAudio.play()
+	                .then(() => {
+	                    appendLog("Áudio iniciado (em loop).", "success");
+	                })
+	                .catch(error => {
+	                    // Handle cases where autoplay is blocked or other errors occur
+	                    appendLog(`Erro ao iniciar áudio: ${error.message}. O áudio requer interação do usuário.`, "error");
+	                    // If audio fails to play, don't start the counter (or handle it differently)
+	                    appendLog("A atividade em segundo plano não foi iniciada devido ao erro do áudio.", "error");
+	                }); 
+            }
+        });
+        
 // ===================
 // Nova Função de Inicialização
 // ===================
@@ -612,7 +1081,7 @@ function init() {
     // Chama a função para exibir o relógio imediatamente
     atualizarRelogio();
     // Inicia a atualização do relógio a cada segundo
-    // setInterval(atualizarRelogio, 1000);
+    setInterval(atualizarRelogio, 1000);
 }
 
 // Chama a função de inicialização quando a página é carregada
