@@ -412,7 +412,26 @@
                     <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="50">
                 </div>
                 <spam style="text-align:center;">Manter esse audio tocando impede o navegador de suspender a pagina e bloquear o toque do alarme.</spam>
+                
+                <strong style="text-align:center;">Como evitar que o Chrome suspenda o site:</strong>
+                <p style="text-align:justify;">
+				Você pode adicionar o site à lista de exceções do "Economia de Memória" do Chrome.<br><br>
+
+> Etapa 1/5 | No Chrome, clique nos três pontos verticais no canto superior direito.<br><br>
+
+> Etapa 2/5 | Vá em Configurações.<br><br>
+
+> Etapa 3/5 | No menu lateral, clique em Desempenho/Performance.<br><br>
+
+> Etapa 4/5 | Procure a seção Economia de Memória e clique em "Adicionar" na parte "Sempre manter estes sites ativos".<br><br>
+
+> Etapa 5/5 | Adicione/Selecione a URL do site de despertador.<br><br>
+
+Isso garantirá que, mesmo com a função de economia de memória ativada, a aba do site permaneça ativa e não seja suspensa pelo navegador.
+                </p>
+                
                 <spam style="text-align:center;">Verifique frequentemente o ícone de reprodução de mídia do navegador.</spam>
+                
                 <div class="image-container">
                     <img src="https://files.catbox.moe/2v8m64.PNG" alt="Imagem Exemplo">
                 </div>
@@ -533,8 +552,8 @@
         // ==========================================================
         // TOCAR AUDIO PARA MANTER ATIVIDADE DA PAGINA:
         // ==========================================================       
-        let currentVolume = 0.3; // Volume visível no slider (0-100)
-        let reservedVolume = 0.29;  // Volume reservado (não acessível pela interface)
+        let currentVolume = 0.20; // Volume visível no slider (0-100)
+        let reservedVolume = 0.19;  // Volume reservado (não acessível pela interface)
 
         // Rewind to the beginning
         mainAudio.addEventListener('ended', () => {
