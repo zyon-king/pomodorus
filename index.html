@@ -921,6 +921,8 @@ const popupModalOverlay = document.getElementById('popup-modal-overlay');
 // ===================
 function init() {
 	volumeSlider.value = currentVolume;
+volumeControls.classList.toggle('active');
+volumeIcon.textContent = 'close';
     
     // Exibe a mensagem inicial de "Nenhuma pausa ativa"
     renderPausas();
