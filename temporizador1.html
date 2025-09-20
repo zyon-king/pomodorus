@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporizador Elegante</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* Estilos CSS */
+        :root {
+            --cor-fundo-escuro: #0f1c2c;
+            --cor-fundo-claro: #1e3a5f;
+            --cor-vinho-escuro: #4d0013;
+            --cor-vinho-claro: #800020;
+            --cor-branca: #ffffff;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, var(--cor-fundo-escuro), var(--cor-fundo-claro));
+            color: var(--cor-branca);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--cor-vinho-escuro), var(--cor-vinho-claro));
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        #timer-display {
+            font-size: 5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        #toggle-button {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, var(--cor-vinho-claro), var(--cor-vinho-escuro));
+            color: var(--cor-branca);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #toggle-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        #toggle-button:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="timer-display">01:00</h1>
+        <button id="toggle-button">
+            <i id="icon" class="fa-solid fa-play"></i>
+        </button>
+    </div>
+
+    <script>
+        // Lógica JavaScript
+        const timerDisplay = document.getElementById('timer-display');
+        const toggleButton = document.getElementById('toggle-button');
+        const icon = document.getElementById('icon');
+
+        let seconds = 60;
+        let isRunning = false;
+        let timerInterval;
+
+        // URL de um som de 'beep' para quando o timer terminar
+        // Função para tocar um 'beep' curto
+        function playBeep() {
+            // Cria um novo contexto de áudio
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+            // Cria um oscilador para gerar o tom
+            const oscillator = audioContext.createOscillator();
+
+            // Define o tipo de onda (sinewave, square, sawtooth, triangle)
+            oscillator.type = 'sine';
+
+            // Define a frequência do tom em Hertz (um "beep" comum é entre 440Hz e 880Hz)
+            oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+
+            // Conecta o oscilador ao destino (os alto-falantes)
+            oscillator.connect(audioContext.destination);
+
+            // Inicia a reprodução do tom
+            oscillator.start();
+
+            // Agenda a parada da reprodução após 100ms
+            oscillator.stop(audioContext.currentTime + 0.1); 
+        }
+
+        // Em seu código principal, chame esta função quando o timer chegar a 0
+        // Exemplo:
+        // if (seconds <= 0) {
+        //     clearInterval(timerInterval);
+        //     playBeep();
+        //     seconds = 60;
+        //     startTimer();
+        // }
+
+        function updateDisplay() {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (isRunning) return; // Evita iniciar múltiplos timers
+
+            isRunning = true;
+            icon.classList.remove('fa-play');
+            icon.classList.add('fa-pause');
+
+            timerInterval = setInterval(() => {
+                seconds--;
+                updateDisplay();
+
+                if (seconds <= 0) {
+                    clearInterval(timerInterval);
+                    playBeep();
+                    // Reinicia o timer automaticamente
+                    seconds = 60; 
+                    updateDisplay();
+                    isRunning = false; // Permite que o timer reinicie
+                    startTimer();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            icon.classList.remove('fa-pause');
+            icon.classList.add('fa-play');
+        }
+
+        toggleButton.addEventListener('click', () => {
+            if (isRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        });
+
+        // Inicializa o display
+        updateDisplay();
+    </script>
+</body>
+</html>
