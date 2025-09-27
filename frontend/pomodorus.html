@@ -5,38 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alarme de Inatividade</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-            text-align: center;
-        }
-        .container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333;
-        }
-        #status {
-            margin-top: 20px;
-            font-size: 1.2em;
-            color: #555;
-            min-height: 30px;
-        }
-        #countdown-display {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #007bff;
-            margin-top: 20px;
-        }
+    :root {
+        --dark-blue: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%); /* cor fundo */
+        --wine: linear-gradient(135deg, #4b0a0a 0%, #6b0c1e 50%, #3f0b14 100%); /* cor container */
+        --light-wine: linear-gradient(135deg, #3c0a24 0%, #5e0b35 50%, #3c0a24 100%);  /* cor botões */
+        --text-color: #f0f0f0;
+        --border-color: #4a148c;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        /* Aplicando a cor de fundo com a variável --dark-blue */
+        background: var(--dark-blue);
+        text-align: center;
+        /* Ajustando a cor do texto principal para legibilidade */
+        color: var(--text-color);
+    }
+    .container {
+        /* Aplicando a cor do container com a variável --wine */
+        background: var(--wine);
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* Sombra mais escura para contraste */
+        /* Adicionando uma borda sutil com a variável --border-color */
+        border: 1px solid var(--border-color);
+    }
+    h1 {
+        /* Ajustando a cor do título para a cor do texto principal */
+        color: var(--text-color);
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    }
+    #status {
+        margin-top: 20px;
+        font-size: 1.2em;
+        /* Cor mais suave para o status */
+        color: #cccccc;
+        min-height: 30px;
+    }
+    #countdown-display {
+        font-size: 2.5em;
+        font-weight: bold;
+        /* Mantendo um azul vibrante ou ajustando para um tom que combine,
+           como uma cor de realce, se necessário.
+           Mantendo o azul original, mas você pode mudar para algo como #9e9e9e ou #f9a825 se preferir. */
+        color: #4dc4ff; /* Um azul mais claro para destaque */
+        margin-top: 20px;
+    }
+    /* Estilo para o parágrafo onde está o tempo do alarme */
+    p {
+        color: var(--text-color);
+    }
     </style>
 </head>
 <body>
@@ -49,7 +73,7 @@
 
     <script>
 // Define os horários dos alarmes
-const alarmes = ["10:00", "10:10", "11:30", "12:30", "14:40", "14:50"]; // Formato HH:mm
+const alarmes = ["10:00", "10:10", "12:00", "13:00", "13:30", "14:30", "15:20", "15:30"]; // Formato HH:mm
 
 const notificationSound = new Audio('https://github.com/akx/Notifications/raw/refs/heads/master/WAV/Enharpment.wav');
 
