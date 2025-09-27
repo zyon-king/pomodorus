@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alarme de Inatividade</title>
+    <title>My Pomodorus</title>
     <style>
     :root {
         --dark-blue: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%); /* cor fundo */
@@ -28,6 +28,7 @@
         color: var(--text-color);
     }
     .container {
+    	max-width: 70%;
         /* Aplicando a cor do container com a variável --wine */
         background: var(--wine);
         padding: 40px;
@@ -65,8 +66,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>Alarme de Inatividade</h1>
-        <p>Monitorando sua atividade para o alarme de **<span id="alarm-time"></span>**.</p>
+        <h1>My Pomodorus</h1>
+        <p>Lista de alarmes **<span id="alarm-time"></span>**.</p>
         <div id="status">Clique para iniciar...</div>
         <div id="countdown-display"></div>
     </div>
@@ -147,10 +148,10 @@ function requestPermission() {
     Notification.requestPermission().then(permission => {
         if (permission === 'granted') {
             console.log('Permissão para notificações concedida.');
-            atualizarStatus('Permissão concedida! O temporizador de inatividade está ativo.');
+            atualizarStatus('Permissão concedida! Sua lista de alarmes foi ativada.');
         } else {
             console.log('Permissão para notificações negada.');
-            atualizarStatus('Permissão para notificações negada.');
+            atualizarStatus('Permissão para notificações negada. Sua lista de alarmes foi desativada.');
         }
     });
 }
@@ -167,8 +168,8 @@ function verificarInatividade() {
 
 function enviarNotificacao() {
     if (Notification.permission === 'granted') {
-        const notificacao = new Notification('Você ainda está aí?', {
-            body: 'Clique para voltar à página.',
+        const notificacao = new Notification('My Pomodorus', {
+            body: 'Clique em qualquer lugar da página para parar de receber notificações.',
             icon: 'https://cdn.icon-icons.com/icons2/1369/PNG/512/-notification_89753.png'
         });
 
@@ -238,7 +239,7 @@ function init() {
     // Inicia a verificação uma única vez, no momento certo
     window.intervaloVerificacaoId = setTimeout(verificarInatividade, tempoEmMs); 
     console.log(`Verificação de inatividade agendada para daqui a ${contagemRegressivaEmMinutos} minutos.`);
-    atualizarStatus('A página está monitorando sua atividade. Clique em qualquer lugar para reiniciar o contador.');
+    atualizarStatus('Apos receber a notificação clique em qualquer lugar da página para parar de receber notificações.');
     
     // Atualiza a contagem regressiva a cada minuto para o usuário
     intervaloContagemId = setInterval(atualizarContagemRegressiva, 60000);
