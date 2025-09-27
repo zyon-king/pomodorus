@@ -67,7 +67,12 @@
 <body>
     <div class="container">
         <h1>My Pomodorus</h1>
-        <p>Lista de alarmes **<span id="alarm-time"></span>**.</p>
+        <h1>Como usar:</h3>
+        <p>> Etapa 1/2 - asdfasd sadf</p>
+        <p>> Etapa 1/2 - asdfasd sadf</p>
+        <p><strong>Link de Exemplo:</strong></p>
+        <p>https://mypomodorus.appwrite.network/?alarmes=11:12,11:15,11:20</p>
+        <p><strong>Lista de alarmes:</strong> | <span id="alarm-time"></span> |</p>
         <div id="status">Clique para iniciar...</div>
         <div id="countdown-display"></div>
     </div>
@@ -148,7 +153,7 @@ function requestPermission() {
     Notification.requestPermission().then(permission => {
         if (permission === 'granted') {
             console.log('Permissão para notificações concedida.');
-            atualizarStatus('Permissão concedida! Sua lista de alarmes foi ativada.');
+            atualizarStatus('Permissão concedida para notificações! Sua lista de alarmes foi ativada.');
         } else {
             console.log('Permissão para notificações negada.');
             atualizarStatus('Permissão para notificações negada. Sua lista de alarmes foi desativada.');
@@ -214,7 +219,7 @@ function resetarContador() {
     
     window.intervaloVerificacaoId = setTimeout(verificarInatividade, tempoEmMs);
     console.log(`Próxima verificação em ${contagemRegressivaEmMinutos} minutos.`);
-    atualizarStatus('Bem-vindo de volta! O contador de inatividade foi reiniciado.');
+    atualizarStatus('Bem-vindo de volta!');
 }
 
 function atualizarStatus(mensagem) {
