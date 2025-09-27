@@ -82,10 +82,10 @@
 // Tenta obter os alarmes da URL, se falhar, usa a lista padrão (fallback)
 const alarmesDaUrl = getAlarmesFromUrl();
 
-const alarmes = alarmesDaUrl && alarmesDaUrl.length > 0 ? alarmesDaUrl : ["23:59"]; // Formato HH:mm "10:00", "10:10", ...
+const alarmes = alarmesDaUrl && alarmesDaUrl.length > 0 ? alarmesDaUrl : ["16:10", "16:05"]; // Formato HH:mm "10:00", "10:10", ...
 
 
-const notificationSound = new Audio('https://github.com/akx/Notifications/raw/refs/heads/master/WAV/Enharpment.wav');
+const notificationSound = new Audio('https://github.com/zyon-king/pomodorus/raw/refs/heads/main/sounds/notification-sound-type-15-no-copyright-410282.mp3');
 
 // Variáveis de controle
 let intervaloNotificacaoId = null;
@@ -132,6 +132,14 @@ function atualizarContagemRegressiva() {
     let tempoMinimo = Infinity;
     let alarmeProximo = null;
 
+    // VERIFICAÇÃO CHAVE: Se não houver alarmes, define o estado de inatividade
+    if (!alarmes || alarmes.length === 0) {
+        document.getElementById('countdown-display').innerText = 'Nenhum alarme definido.';
+        alarmeAtual = null;
+        contagemRegressivaEmMinutos = 0; // Define como 0 para ser tratado na hora do agendamento
+        return; 
+    }
+
     alarmes.forEach(alarme => {
         const tempoRestante = calcularTempoRestante(alarme);
         if (tempoRestante < tempoMinimo) {
@@ -163,6 +171,16 @@ function requestPermission() {
 }
 
 function verificarInatividade() {
+    // Se não houver alarme agendado (devido à lista vazia), não faça nada.
+    if (contagemRegressivaEmMinutos === 0 && (alarmeAtual === null || !alarmeAtual)) {
+        console.log('Nenhum alarme definido, ignorando verificação de inatividade.');
+        atualizarStatus('Nenhum alarme definido. Temporizador inativo.');
+        // Limpa o intervalo de notificação por segurança
+        clearInterval(intervaloNotificacaoId);
+        intervaloNotificacaoId = null;
+        return; 
+    }
+
     if (intervaloNotificacaoId === null) {
         console.log('Limite de inatividade atingido. Começando a enviar notificações.');
         atualizarStatus('Clique em qualquer lugar da página para parar de receber notificações.');
@@ -209,9 +227,11 @@ function resetarContador() {
     clearInterval(intervaloNotificacaoId);
     intervaloNotificacaoId = null;
 
-    // Recalcula o tempo restante e reinicia o temporizador
+    // Recalcula o tempo restante. Se alarmes estiver vazio, contagemRegressivaEmMinutos será 0.
     atualizarContagemRegressiva();
-    const tempoEmMs = contagemRegressivaEmMinutos * 60000;
+    
+    // Agendamento Seguro: tempoEmMs será 0 se contagemRegressivaEmMinutos for 0
+    let tempoEmMs = contagemRegressivaEmMinutos * 60000;
     
     // Limpa o temporizador anterior para evitar duplicações
     if (window.intervaloVerificacaoId) {
@@ -219,8 +239,35 @@ function resetarContador() {
     }
     
     window.intervaloVerificacaoId = setTimeout(verificarInatividade, tempoEmMs);
-    console.log(`Próxima verificação em ${contagemRegressivaEmMinutos} minutos.`);
-    atualizarStatus('Bem-vindo de volta!');
+    
+    if (tempoEmMs > 0) {
+        console.log(`Próxima verificação em ${contagemRegressivaEmMinutos} minutos.`);
+        atualizarStatus('Bem-vindo de volta! O contador de inatividade foi reiniciado.');
+    } else {
+        console.log('Nenhum alarme ativo. Verificação de inatividade desativada.');
+        atualizarStatus('Nenhum alarme definido. Temporizador inativo.');
+    }
+}
+
+function agendarPrimeiraVerificacao() {
+    atualizarContagemRegressiva();
+
+    // Agendamento Seguro: tempoEmMs será 0 se contagemRegressivaEmMinutos for 0
+    let tempoEmMs = contagemRegressivaEmMinutos * 60000;
+
+    // Inicia a verificação uma única vez, no momento certo
+    window.intervaloVerificacaoId = setTimeout(verificarInatividade, tempoEmMs);
+    
+    if (tempoEmMs > 0) {
+        console.log(`Verificação de inatividade agendada para daqui a ${contagemRegressivaEmMinutos} minutos.`);
+        atualizarStatus('Após receber a notificação clique em qualquer lugar da página para parar de receber notificações.');
+    } else {
+        console.log('Nenhum alarme ativo. Verificação de inatividade desativada.');
+        atualizarStatus('Nenhum alarme definido. Temporizador inativo.');
+    }
+
+    // Atualiza a contagem regressiva a cada minuto para o usuário
+    intervaloContagemId = setInterval(atualizarContagemRegressiva, 60000);
 }
 
 function atualizarStatus(mensagem) {
@@ -233,22 +280,17 @@ function atualizarStatus(mensagem) {
 
 function init() {
     console.log('DOM carregado. Iniciando script.');
-    document.getElementById('alarm-time').innerText = alarmes.join(', '); 
+    
+    // Chama a função para garantir que o array 'alarmes' seja exibido no HTML
+    document.getElementById('alarm-time').innerText = alarmes.join(', ');
+    
     requestPermission();
     
     document.addEventListener('click', resetarContador);
     document.addEventListener('keypress', resetarContador);
 
-    atualizarContagemRegressiva();
-    const tempoEmMs = contagemRegressivaEmMinutos * 60000;
-    
-    // Inicia a verificação uma única vez, no momento certo
-    window.intervaloVerificacaoId = setTimeout(verificarInatividade, tempoEmMs); 
-    console.log(`Verificação de inatividade agendada para daqui a ${contagemRegressivaEmMinutos} minutos.`);
-    atualizarStatus('Após receber a notificação clique em qualquer lugar da página para parar de receber notificações.');
-    
-    // Atualiza a contagem regressiva a cada minuto para o usuário
-    intervaloContagemId = setInterval(atualizarContagemRegressiva, 60000);
+    // Chamada para a nova função que contém a lógica de agendamento seguro
+    agendarPrimeiraVerificacao();
 }
 
 document.addEventListener('DOMContentLoaded', init);
