@@ -72,8 +72,11 @@
     </div>
 
     <script>
-// Define os horários dos alarmes
-const alarmes = ["10:00", "10:10", "12:00", "13:00", "13:30", "14:30", "15:20", "15:30"]; // Formato HH:mm
+// Tenta obter os alarmes da URL, se falhar, usa a lista padrão (fallback)
+const alarmesDaUrl = getAlarmesFromUrl();
+
+const alarmes = alarmesDaUrl && alarmesDaUrl.length > 0 ? alarmesDaUrl : ["23:59"]; // Formato HH:mm "10:00", "10:10", ...
+
 
 const notificationSound = new Audio('https://github.com/akx/Notifications/raw/refs/heads/master/WAV/Enharpment.wav');
 
@@ -82,6 +85,25 @@ let intervaloNotificacaoId = null;
 let contagemRegressivaEmMinutos = 0;
 let intervaloContagemId = null;
 let alarmeAtual = null;
+
+/* URL FX */
+function getAlarmesFromUrl() {
+    // 1. Cria um objeto para analisar a string de consulta da URL (tudo após o '?')
+    const params = new URLSearchParams(window.location.search);
+    
+    // 2. Tenta obter o valor do parâmetro 'alarmes'
+    const alarmesStr = params.get('alarmes');
+    
+    // 3. Se o parâmetro for encontrado e não estiver vazio
+    if (alarmesStr) {
+        // Divide a string em uma array, usando a vírgula (,) como separador
+        // e retorna a array de horários
+        return alarmesStr.split(',').map(h => h.trim());
+    }
+    
+    // 4. Se o parâmetro não for encontrado, retorna null
+    return null;
+}
 
 function calcularTempoRestante(alarmeStr) {
     const [horas, minutos] = alarmeStr.split(':').map(Number);
@@ -204,7 +226,7 @@ function atualizarStatus(mensagem) {
 
 function init() {
     console.log('DOM carregado. Iniciando script.');
-    document.getElementById('alarm-time').innerText = alarmes.join(', ');
+    document.getElementById('alarm-time').innerText = alarmes.join(', '); 
     requestPermission();
     
     document.addEventListener('click', resetarContador);
