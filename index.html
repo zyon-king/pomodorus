@@ -28,6 +28,7 @@
     }
     .container {
     	position: relative;
+        margin: 10px;
     	max-width: 70%;
         /* Aplicando a cor do container com a variável --wine */
         background: var(--wine);
@@ -73,8 +74,8 @@
     	background: var(--light-wine); 
         color: var(--text-color); 
         border: 2px solid var(--border-color); 
-        font-size: 2em; 
-        padding: 10px 20px; 
+        font-size: 1.5em; 
+        padding: 5px 15px; 
         cursor: pointer; 
         border-radius: 5px; 
     }
@@ -122,7 +123,7 @@
 // Tenta obter os alarmes da URL, se falhar, usa a lista padrão (fallback)
 const alarmesDaUrl = getAlarmesFromUrl();
 
-const alarmes = alarmesDaUrl && alarmesDaUrl.length > 0 ? alarmesDaUrl : ["11:20", "11:23"]; // Formato HH:mm "10:00", "10:10", ...
+const alarmes = alarmesDaUrl && alarmesDaUrl.length > 0 ? alarmesDaUrl : []; // Formato HH:mm "10:00", "10:10", ...
 
 
 const notificationSound = new Audio('https://github.com/zyon-king/pomodorus/raw/refs/heads/main/sounds/notification-sound-type-15-no-copyright-410282.mp3');
