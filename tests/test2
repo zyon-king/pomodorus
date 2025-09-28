@@ -77,20 +77,12 @@
         <div id="status">Clique para iniciar...</div>
         <div id="countdown-display"></div>
     </div>
-    <div id="initial-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; color: var(--text-color); padding: 20px; text-align: center;">
-        <h2>Bem-vindo ao My Pomodorus</h2>
-        <p>Clique no "X" para **iniciar a lista de alarmes** e permitir as notificações sonoras.</p>
-        <button id="close-overlay" style="background: var(--light-wine); color: var(--text-color); border: 2px solid var(--border-color); font-size: 2em; padding: 10px 20px; cursor: pointer; border-radius: 5px; margin-top: 20px;">
-            X
-        </button>
-        <p style="margin-top: 15px; font-size: 0.8em;">(Este clique também ativa o áudio para futuras notificações.)</p>
-    </div>
 
     <script>
 // Tenta obter os alarmes da URL, se falhar, usa a lista padrão (fallback)
 const alarmesDaUrl = getAlarmesFromUrl();
 
-const alarmes = alarmesDaUrl && alarmesDaUrl.length > 0 ? alarmesDaUrl : []; // Formato HH:mm "10:00", "10:10", ...
+const alarmes = alarmesDaUrl && alarmesDaUrl.length > 0 ? alarmesDaUrl : ["16:10", "16:05"]; // Formato HH:mm "10:00", "10:10", ...
 
 
 const notificationSound = new Audio('https://github.com/zyon-king/pomodorus/raw/refs/heads/main/sounds/notification-sound-type-15-no-copyright-410282.mp3');
@@ -286,53 +278,20 @@ function atualizarStatus(mensagem) {
     notificationSound.currentTime = 0;
 }
 
-
-    
 function init() {
     console.log('DOM carregado. Iniciando script.');
     
     // Chama a função para garantir que o array 'alarmes' seja exibido no HTML
     document.getElementById('alarm-time').innerText = alarmes.join(', ');
     
-    // 1. SOLICITA PERMISSÃO DE NOTIFICAÇÃO (Pode ser feito aqui, mas a permissão de som é mais crítica)
     requestPermission();
     
-    // 2. REGISTRA OS LISTENERS DE CONTROLE DE INATIVIDADE (MANTENHA ESTES!)
     document.addEventListener('click', resetarContador);
     document.addEventListener('keypress', resetarContador);
 
-    // 3. NOVO: Lógica de Fechamento do Overlay
-    const closeButton = document.getElementById('close-overlay');
-    const overlay = document.getElementById('initial-overlay');
-
-    closeButton.addEventListener('click', () => {
-        // A) Desbloqueia o Áudio com o Gesto do Usuário
-        // Este é o ajuste crítico para garantir que o som toque mais tarde.
-        notificationSound.play().then(() => {
-            notificationSound.pause();
-            notificationSound.currentTime = 0;
-            console.log('Áudio desbloqueado para o domínio.');
-        }).catch(error => {
-            console.warn("Falha ao desbloquear o áudio. O som pode estar bloqueado pelo navegador.", error);
-        });
-        
-        // B) Fecha o Overlay
-        overlay.style.display = 'none';
-
-        // C) Inicia o Loop de Alarme
-        // Chama a função que agenda o primeiro alarme
-        agendarPrimeiraVerificacao();
-    });
-
-    // Remova a chamada inicial de agendarPrimeiraVerificacao() de init, pois agora ela será chamada pelo clique do overlay
-    // REMOVA: agendarPrimeiraVerificacao();
-    
-    // **Importante:** Se o elemento do overlay não for encontrado, ele deve iniciar automaticamente como um fallback.
-    if (!overlay) {
-        agendarPrimeiraVerificacao();
-    }
+    // Chamada para a nova função que contém a lógica de agendamento seguro
+    agendarPrimeiraVerificacao();
 }
-// O restante do seu script (resetarContador, enviarNotificacao, etc.) permanece inalterado!
 
 document.addEventListener('DOMContentLoaded', init);
     </script>
