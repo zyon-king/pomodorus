@@ -80,6 +80,47 @@
         border-radius: 5px; 
     }
     
+    .alarm-control  {
+        /* POSICIONAMENTO ABSOLUTO */
+        display: flex;
+    	background: var(--light-wine); 
+        color: var(--text-color); 
+        border: none; 
+        font-size: 1em; 
+        padding: 10px 20px; 
+        border-radius: 5px;        
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    #new-alarm-time {
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        background-color: #0f0f23; /* Cor escura */
+        color: var(--text-color);
+        font-size: 1em;
+    }
+
+    #add-alarm-button {
+        background: var(--light-wine);
+        color: var(--text-color);
+        border: 2px solid var(--border-color);
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+
+    #add-alarm-button:hover {
+        background: var(--wine); /* Um hover mais escuro */
+    }
+    
     #current-time  {
         /* POSICIONAMENTO ABSOLUTO */
         position: absolute; 
@@ -102,7 +143,15 @@
         <div id="status">Clique para iniciar...</div>
         <p><strong>⏰ Lista de alarmes: | <span id="alarm-time"></span> |</strong></p>
         <div id="countdown-display"></div>
+        
         <p>___________________</p>
+        <div class="alarm-control">
+            <label for="new-alarm-time">Novo Alarme:</label>
+            <input type="time" id="new-alarm-time" value="09:00" required>
+            <button id="add-alarm-button">Criar Alarme</button>
+        </div>
+        
+        <p>___________________</p>
         <h2>Como usar:</h2>
         <p>> Etapa 1/2 - edite o link com o início e fim de suas pausas.</p>
         <p>> Etapa 2/2 - cole o link no seu navegador</p>
@@ -126,7 +175,7 @@ const alarmesDaUrl = getAlarmesFromUrl();
 const alarmes = alarmesDaUrl && alarmesDaUrl.length > 0 ? alarmesDaUrl : []; // Formato HH:mm "10:00", "10:10", ...
 
 
-const notificationSound = new Audio('https://github.com/zyon-king/pomodorus/raw/refs/heads/main/sounds/notification-sound-type-15-no-copyright-410282.mp3');
+let notificationSound = new Audio('https://github.com/zyon-king/pomodorus/raw/refs/heads/main/sounds/notification-sound-type-15-no-copyright-410282.mp3');
 
 // Variáveis de controle
 let intervaloNotificacaoId = null;
@@ -347,7 +396,36 @@ function iniciarRelogio() {
     // Agenda a atualização a cada 1000 milissegundos (1 segundo)
     setInterval(atualizarRelogio, 1000); 
 }
-    
+
+/* FX: Adiciona Alarme Dinamicamente */
+function adicionarAlarme() {
+    const input = document.getElementById('new-alarm-time');
+    const novoHorario = input.value.trim();
+
+    // 1. Validação básica do formato (HH:mm)
+    if (!novoHorario || !/^\d{2}:\d{2}$/.test(novoHorario)) {
+        atualizarStatus('Por favor, insira um horário válido (HH:mm).');
+        return;
+    }
+
+    // 2. Adiciona o novo horário (evitando duplicatas, opcional)
+    if (!alarmes.includes(novoHorario)) {
+        alarmes.push(novoHorario);
+    } else {
+        atualizarStatus(`Alarme para ${novoHorario} já existe.`);
+        return;
+    }
+
+    // 3. Reordena e exibe a lista atualizada
+    // (A ordenação garante que o próximo alarme seja calculado corretamente)
+    alarmes.sort();
+    document.getElementById('alarm-time').innerText = alarmes.join(', ');
+
+    // 4. Reinicia o contador para agendar o próximo alarme
+    resetarContador(); 
+    atualizarStatus(`Alarme ${novoHorario} adicionado com sucesso!`);
+}
+
 function init() {
     console.log('DOM carregado. Iniciando script.');
     
@@ -361,6 +439,13 @@ function init() {
     // 2. REGISTRA OS LISTENERS DE CONTROLE DE INATIVIDADE (MANTENHA ESTES!)
     document.addEventListener('click', resetarContador);
     document.addEventListener('keypress', resetarContador);
+    
+    // NOVO: Listener para o botão de Adicionar Alarme
+    const addButton = document.getElementById('add-alarm-button');
+    if (addButton) {
+        addButton.addEventListener('click', adicionarAlarme);
+    }
+
 
     // 3. NOVO: Lógica de Fechamento do Overlay
     const closeButton = document.getElementById('close-overlay');
