@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -114,10 +113,10 @@
     }
     
     .alarm-control input[type="time"] {
-        padding: 10px;
+        padding: 5px;
         color: #000000; 
     	font-weight: bold; 
-        font-size: 1.2em; 
+        font-size: 1.3em; 
         background-color: #f0f0f0; 
     }
 
@@ -165,6 +164,7 @@
         display: flex;
         justify-content: space-between; /* Distribui o texto e o 'X' */
         align-items: center;
+        max-width: 75%;
         padding: 10px; /* Reduzido o padding para caber na coluna */
         margin: 0; /* Remove a margem vertical desnecessária */
         border: none;
@@ -190,6 +190,14 @@
 
     .remove-alarm-button:hover {
         background: #e57373; /* Vermelho mais claro ao passar o mouse */
+    }
+    
+    /* Adicione isso ao final do seu bloco <style> */
+    @media (max-width: 600px) {
+        #alarm-list-container {
+            /* Em telas menores que 600px, use apenas X coluna */
+        	grid-template-columns: repeat(3, 1fr); 
+        }
     }
     </style>
 </head>
