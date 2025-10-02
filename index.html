@@ -124,6 +124,13 @@
         transform: scale(0.98);
     }
     
+    .lista-alarmes {
+      	display: flex;
+      	flex-direction: column;
+      	align-items: center;
+        font-weight: bold;
+    	background: var(--light-wine); 
+    }
     </style>
 </head>
 <body>
@@ -135,7 +142,7 @@
         <div class="alarm-control">
             <label for="new-alarm-time">Novo Alarme:</label>
             <input type="time" id="new-alarm-time" value="09:00" required>
-            <button id="add-alarm-button">Criar Alarme</button>
+            <button id="add-alarm-button">Adicionar Alarme</button>
         </div>
         
         <p id="generated-link-container" style="visibility: hidden;">
@@ -144,8 +151,14 @@
         
         <p>___________________</p>
     
-        <p><strong>⏰ Lista de alarmes: | <span id="alarm-time"></span> |</strong></p>
+        
+        <div class="lista-alarmes">
+            <p>⏰ Lista de alarmes</p>
+            <span class="alarm-control" id="alarm-time"></span>
+        </div>
+        
         <div id="countdown-display" class="generalText"></div>
+
         
         <p>___________________</p>
         <h2>Como usar:</h2>
