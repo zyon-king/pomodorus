@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Pomodorus</title>
+    <style>
+    :root {
+        --dark-blue: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%); /* cor fundo */
+        --wine: linear-gradient(135deg, #4b0a0a 0%, #6b0c1e 50%, #3f0b14 100%); /* cor container */
+        --light-wine: linear-gradient(135deg, #3c0a24 0%, #5e0b35 50%, #3c0a24 100%);  /* cor botões */
+        --text-color: #f0f0f0;
+        --border-color: #4a148c;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center; 
+
+        height: 100vh;
+        margin: 2%;
+        background: var(--dark-blue);
+        text-align: center;
+        color: var(--text-color);
+    }
+    .container {
+    	position: relative;
+        margin: 10px;
+    	max-width: 70%;
+        /* Aplicando a cor do container com a variável --wine */
+        background: var(--wine);
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* Sombra mais escura para contraste */
+        /* Adicionando uma borda sutil com a variável --border-color */
+        border: 1px solid var(--border-color);
+    }
+    h1 {
+        /* Ajustando a cor do título para a cor do texto principal */
+        color: var(--text-color);
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    }
+    #status {
+        margin-top: 20px;
+        font-size: 1.2em;
+        /* Cor mais suave para o status */
+        color: #cccccc;
+        min-height: 30px;
+    }
+    .generalText {
+        font-size: 1em;
+        font-weight: bold;
+        /* Mantendo um azul vibrante ou ajustando para um tom que combine,
+           como uma cor de realce, se necessário.
+           Mantendo o azul original, mas você pode mudar para algo como #9e9e9e ou #f9a825 se preferir. */
+        color: #4dc4ff; /* Um azul mais claro para destaque */
+        margin-top: 20px;
+    }
+    p {
+        color: var(--text-color);
+    }
+    /* Estilos para o Botão "X" no canto superior direito */
+    .initialOverlay {
+    	position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; color: var(--text-color); padding: 20px; text-align: center;
+    }
+    .closeOverlay, #current-time  {
+        /* POSICIONAMENTO ABSOLUTO */
+        position: absolute; 
+        top: 20px; 
+        right: 60px;
+    	background: var(--light-wine); 
+        color: var(--text-color); 
+        border: 2px solid var(--border-color); 
+        font-size: 1.5em; 
+        padding: 5px 15px; 
+        cursor: pointer; 
+        border-radius: 5px; 
+    }
+    
+    #current-time  {
+        /* POSICIONAMENTO ABSOLUTO */
+        position: absolute; 
+        right: 20px;
+        border: none; 
+        font-size: 1em; 
+        padding: 10px 20px; 
+    }
+    
+    /* --- Estilos para o Controle de Alarme Dinâmico --- */
+    .alarm-control {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 5px 10px;
+        gap: 5px; /* Espaço entre os elementos */
+    	background: var(--light-wine); 
+
+    }
+
+    .alarm-control button {
+        /* Estilização para o botão Criar Alarme */
+        background: var(--border-color); /* Gradiente de vinho claro */
+        color: var(--text-color);
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.3s ease, transform 0.1s ease;
+    }
+
+    .alarm-control input[type="time"] {
+    	padding: 10px;
+    }
+
+    .alarm-control button:hover {
+    	background: #593299;
+    }
+
+    .alarm-control button:active {
+        /* Efeito ao clicar */
+        transform: scale(0.98);
+    }
+    
+    /* --- Novo Estilo: Item individual do alarme --- */
+    .alarm-item {
+        display: flex; /* Para alinhar o texto e o 'X' */
+        align-items: center;
+        gap: 10px; /* Espaçamento entre o horário e o 'X' */
+        padding: 5px 10px;
+        margin: 5px 0;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        background: var(--wine); /* Um fundo sutil para cada item */
+    }
+
+    /* --- Novo Estilo: Botão de Remover Alarme ('X') --- */
+    .remove-alarm-button {
+        background: #d32f2f; /* Vermelho escuro */
+        color: var(--text-color);
+        border: none;
+        padding: 3px 8px;
+        cursor: pointer;
+        border-radius: 3px;
+        font-weight: bold;
+        line-height: 1; /* Alinhamento vertical do 'X' */
+        transition: background 0.2s;
+    }
+
+    .remove-alarm-button:hover {
+        background: #e57373; /* Vermelho mais claro ao passar o mouse */
+    }
+
+    /* Ajuste na lista-alarmes para melhor alinhamento */
+    .lista-alarmes {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 10px;
+        font-weight: bold;
+        background: var(--light-wine);
+        padding: 10px; /* Adicionado padding para o fundo ficar melhor */
+        border-radius: 8px;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="current-time"></div>
+        <h1>My Pomodorus</h1>
+        <div id="status">Clique para iniciar...</div>
+        <p>___________________</p>
+        <div class="alarm-control">
+            <label for="new-alarm-time">Novo Alarme:</label>
+            <input type="time" id="new-alarm-time" value="09:00" required>
+            <button id="add-alarm-button">Adicionar Alarme</button>
+        </div>
+        
+        <p id="generated-link-container" style="visibility: hidden;">
+    <strong class="generalText">Salve o link da sua lista de alarmes:</strong></p>
+    <span id="generated-link"></span>
+        
+        <p>___________________</p>
+        
+        <div id="countdown-display" class="generalText"></div>
+    
+        <div class="lista-alarmes">
+            <p>⏰ Lista de alarmes</p>
+            <div id="alarm-list-container"></div>
+        </div>
+
+        
+        <p>___________________</p>
+        <h2>Como usar:</h2>
+        <p>> Etapa 1/2 - edite ou copie o link com o início e fim de suas pausas.</p>
+        <p>> Etapa 2/2 - cole o link no seu navegador</p>
+        <p><strong>Link de Exemplo:</strong></p>
+        <p>https://mypomodorus.appwrite.network/?alarmes=11:12,11:15,11:20</p>
+    </div>
+    
+    <div id="initial-overlay" class="initialOverlay">
+        <h2>Bem-vindo ao My Pomodorus</h2>
+        <h3>Ao fechar essa mensagem a **lista de alarmes** será ativada e as notificações sonoras serão permitidas.</h3>
+        <button id="close-overlay" class="closeOverlay">
+            X
+        </button>
+        <p style="margin-top: 15px; font-size: 1em;">(O áudio para futuras notificações também será ativado.)</p>
+        
+        <p>___________________</p>
+        <p style="margin-top: 15px; font-size: 0.8em;">by Fontanari, C. | 2025</p>
+        
+    </div>
+
+    <script>
+// Tenta obter os alarmes da URL, se falhar, usa a lista padrão (fallback)
+const alarmesDaUrl = getAlarmesFromUrl();
+
+const alarmes = alarmesDaUrl && alarmesDaUrl.length > 0 ? alarmesDaUrl : []; // Formato HH:mm "10:00", "10:10", ...
+
+
+let notificationSound = new Audio('https://github.com/zyon-king/pomodorus/raw/refs/heads/main/sounds/notification-sound-type-15-no-copyright-410282.mp3');
+
+// Variáveis de controle
+let intervaloNotificacaoId = null;
+let contagemRegressivaEmMinutos = 0;
+let intervaloContagemId = null;
+let alarmeAtual = null;
+
+/* URL FX */
+function getAlarmesFromUrl() {
+    // 1. Cria um objeto para analisar a string de consulta da URL (tudo após o '?')
+    const params = new URLSearchParams(window.location.search);
+    
+    // 2. Tenta obter o valor do parâmetro 'alarmes'
+    const alarmesStr = params.get('alarmes');
+    
+    // 3. Se o parâmetro for encontrado e não estiver vazio
+    if (alarmesStr) {
+        // Divide a string em uma array, usando a vírgula (,) como separador
+        // e retorna a array de horários
+        return alarmesStr.split(',').map(h => h.trim());
+    }
+    
+    // 4. Se o parâmetro não for encontrado, retorna null
+    return null;
+}
+
+function calcularTempoRestante(alarmeStr) {
+    const [horas, minutos] = alarmeStr.split(':').map(Number);
+    const agora = new Date();
+    const alarmeDate = new Date();
+    alarmeDate.setHours(horas, minutos, 0, 0);
+
+    // Se o alarme for para um horário já passado hoje, ajusta para o dia seguinte
+    if (alarmeDate.getTime() < agora.getTime()) {
+        alarmeDate.setDate(alarmeDate.getDate() + 1);
+    }
+
+    const diferencaMs = alarmeDate.getTime() - agora.getTime();
+    return Math.floor(diferencaMs / (1000 * 60));
+}
+
+function atualizarContagemRegressiva() {
+    const agora = new Date();
+    let tempoMinimo = Infinity;
+    let alarmeProximo = null;
+
+    // VERIFICAÇÃO CHAVE: Se não houver alarmes, define o estado de inatividade
+    if (!alarmes || alarmes.length === 0) {
+        document.getElementById('countdown-display').innerText = 'Nenhum alarme definido.';
+        alarmeAtual = null;
+        contagemRegressivaEmMinutos = 0; // Define como 0 para ser tratado na hora do agendamento
+        return; 
+    }
+
+    alarmes.forEach(alarme => {
+        const tempoRestante = calcularTempoRestante(alarme);
+        if (tempoRestante < tempoMinimo) {
+            tempoMinimo = tempoRestante;
+            alarmeProximo = alarme;
+        }
+    });
+
+    alarmeAtual = alarmeProximo;
+    contagemRegressivaEmMinutos = tempoMinimo;
+    document.getElementById('countdown-display').innerText = `Faltam ${contagemRegressivaEmMinutos} minutos para ${alarmeAtual}`;
+}
+
+function requestPermission() {
+    if (!('Notification' in window)) {
+        atualizarStatus('Este navegador não suporta notificações.');
+        return;
+    }
+    
+    Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+            console.log('Permissão para notificações concedida.');
+            atualizarStatus('Permissão concedida para notificações! Sua lista de alarmes foi ativada.');
+        } else {
+            console.log('Permissão para notificações negada.');
+            atualizarStatus('Permissão para notificações negada. Sua lista de alarmes foi desativada.');
+        }
+    });
+}
+
+function verificarInatividade() {
+    // Se não houver alarme agendado (devido à lista vazia), não faça nada.
+    if (contagemRegressivaEmMinutos === 0 && (alarmeAtual === null || !alarmeAtual)) {
+        console.log('Nenhum alarme definido, ignorando verificação de inatividade.');
+        atualizarStatus('Nenhum alarme definido.');
+        // Limpa o intervalo de notificação por segurança
+        clearInterval(intervaloNotificacaoId);
+        intervaloNotificacaoId = null;
+        return; 
+    }
+
+    if (intervaloNotificacaoId === null) {
+        console.log('Limite de inatividade atingido. Começando a enviar notificações.');
+        atualizarStatus('Clique em qualquer lugar da página para parar de receber notificações.');
+        
+        enviarNotificacao();
+        intervaloNotificacaoId = setInterval(enviarNotificacao, 60000); // Envia a cada 1 minuto
+    }
+}
+
+function enviarNotificacao() {
+    if (Notification.permission === 'granted') {
+        const notificacao = new Notification('My Pomodorus', {
+            body: 'Clique em qualquer lugar da página para parar de receber notificações.',
+            icon: 'https://cdn.icon-icons.com/icons2/1369/PNG/512/-notification_89753.png'
+        });
+
+        // Toca o som da notificação
+        notificationSound.play();
+        
+        // Adiciona um evento de clique à notificação
+        notificacao.onclick = function() {
+            notificationSound.pause();
+            pause();
+            currentTime = 0;
+        
+            // Tenta focar na aba que gerou a notificação
+            window.focus(); 
+            // Fecha a notificação
+            notificacao.close();
+        };
+
+    } else {
+        // Se a permissão foi revogada, para o som e o temporizador
+        clearInterval(intervaloNotificacaoId);
+        intervaloNotificacaoId = null;
+        console.log('Permissão de notificação revogada. Parando o envio.');
+        atualizarStatus('Permissão de notificação revogada. O envio foi interrompido.');
+    }
+}
+
+function resetarContador() {
+    console.log('Atividade detectada.');
+    
+    clearInterval(intervaloNotificacaoId);
+    intervaloNotificacaoId = null;
+
+    // Recalcula o tempo restante. Se alarmes estiver vazio, contagemRegressivaEmMinutos será 0.
+    atualizarContagemRegressiva();
+    
+    // Agendamento Seguro: tempoEmMs será 0 se contagemRegressivaEmMinutos for 0
+    let tempoEmMs = contagemRegressivaEmMinutos * 60000;
+    
+    // Limpa o temporizador anterior para evitar duplicações
+    if (window.intervaloVerificacaoId) {
+        clearTimeout(window.intervaloVerificacaoId);
+    }
+    
+    window.intervaloVerificacaoId = setTimeout(verificarInatividade, tempoEmMs);
+    
+    if (tempoEmMs > 0) {
+        console.log(`Próxima verificação em ${contagemRegressivaEmMinutos} minutos.`);
+        atualizarStatus('Bem-vindo de volta! O contador de inatividade foi reiniciado.');
+    } else {
+        console.log('Nenhum alarme ativo. Verificação de inatividade desativada.');
+        atualizarStatus('Nenhum alarme definido. Temporizador inativo.');
+    }
+}
+
+function agendarPrimeiraVerificacao() {
+    atualizarContagemRegressiva();
+
+    // Agendamento Seguro: tempoEmMs será 0 se contagemRegressivaEmMinutos for 0
+    let tempoEmMs = contagemRegressivaEmMinutos * 60000;
+
+    // Inicia a verificação uma única vez, no momento certo
+    window.intervaloVerificacaoId = setTimeout(verificarInatividade, tempoEmMs);
+    
+    if (tempoEmMs > 0) {
+        console.log(`Verificação de inatividade agendada para daqui a ${contagemRegressivaEmMinutos} minutos.`);
+        atualizarStatus('Após receber a notificação clique em qualquer lugar da página para parar de receber notificações.');
+    } else {
+        console.log('Nenhum alarme ativo. Verificação de inatividade desativada.');
+        atualizarStatus('Nenhum alarme definido. Temporizador inativo.');
+    }
+
+    // Atualiza a contagem regressiva a cada minuto para o usuário
+    intervaloContagemId = setInterval(atualizarContagemRegressiva, 60000);
+}
+
+function atualizarStatus(mensagem) {
+    document.getElementById('status').innerText = mensagem;           
+                
+    // Para o som quando o usuário interage
+    notificationSound.pause();
+    notificationSound.currentTime = 0;
+}
+
+/* ==================================== */
+/* FX para Relógio em Tempo Real        */
+/* ==================================== */
+
+// Função para obter e formatar a hora atual (HH:mm:ss)
+function formatarHora(date) {
+    const horas = date.getHours().toString().padStart(2, '0');
+    const minutos = date.getMinutes().toString().padStart(2, '0');
+    const segundos = date.getSeconds().toString().padStart(2, '0');
+    return `${horas}:${minutos}:${segundos}`;
+}
+
+// Função principal que atualiza o relógio no DOM
+function atualizarRelogio() {
+    const display = document.getElementById('current-time');
+    if (display) {
+        const agora = new Date();
+        display.innerText = formatarHora(agora);
+    }
+}
+
+// Inicia a atualização do relógio a cada 1 segundo
+function iniciarRelogio() {
+    // Chama a função uma vez imediatamente para evitar atraso de 1 segundo
+    atualizarRelogio(); 
+    // Agenda a atualização a cada 1000 milissegundos (1 segundo)
+    setInterval(atualizarRelogio, 1000); 
+}
+
+/* FX: Adiciona Alarme Dinamicamente */
+function adicionarAlarme() {
+    const input = document.getElementById('new-alarm-time');
+    const novoHorario = input.value.trim();
+
+    // 1. Validação básica do formato (HH:mm)
+    if (!novoHorario || !/^\d{2}:\d{2}$/.test(novoHorario)) {
+        atualizarStatus('Por favor, insira um horário válido (HH:mm).');
+        return;
+    }
+
+    // 2. Adiciona o novo horário (evitando duplicatas, opcional)
+    if (!alarmes.includes(novoHorario)) {
+        alarmes.push(novoHorario);
+    } else {
+        atualizarStatus(`Alarme para ${novoHorario} já existe.`);
+        // Mesmo que já exista, ainda queremos gerar o link atual
+    }
+
+    // 3. Reordena e exibe a lista atualizada (AGORA CHAMA exibirListaAlarmes)
+    alarmes.sort();
+    exibirListaAlarmes(); // <--- MUDANÇA AQUI
+
+    // 4. Reinicia o contador para agendar o próximo alarme
+    resetarContador(); 
+    atualizarStatus(`Alarme ${novoHorario} adicionado com sucesso!`);
+    
+    // NOVO: Gera e exibe o link da URL
+    gerarEExibirLink();
+}
+
+/* FX: Gera e Exibe o Link da URL */
+function gerarEExibirLink() {
+    // 1. Obtém a base da URL (ex: https://mypomodorus.appwrite.network/)
+    // Isso garante que funcione em qualquer ambiente.
+    const baseUrl = window.location.origin + window.location.pathname;
+
+    // 2. Constrói a string de alarmes (ex: 11:12,11:15,11:20)
+    const alarmesStr = alarmes.join(',');
+
+    // 3. Constrói o link completo com o parâmetro 'alarmes'
+    const linkCompleto = `${baseUrl}?alarmes=${alarmesStr}`;
+
+    // 4. Exibe no DOM
+    const linkDisplay = document.getElementById('generated-link');
+    const container = document.getElementById('generated-link-container');
+    
+    if (linkDisplay && container) {
+        linkDisplay.innerText = linkCompleto;
+        // Torna a seção visível
+        container.style.visibility = 'visible'; 
+    }
+}
+
+/* FX: Remove Alarme */
+function removerAlarme(horarioParaRemover) {
+    // 1. Encontra o índice do alarme no array
+    const index = alarmes.indexOf(horarioParaRemover);
+
+    if (index > -1) {
+        // 2. Remove o alarme do array
+        alarmes.splice(index, 1);
+        
+        // 3. Re-exibe a lista (remove o elemento do DOM)
+        exibirListaAlarmes(); 
+
+        // 4. Reinicia o contador para agendar o próximo alarme
+        resetarContador();
+        atualizarStatus(`Alarme ${horarioParaRemover} removido.`);
+        
+        // 5. Gera e exibe o novo link (sem o alarme removido)
+        gerarEExibirLink();
+    }
+}
+
+/* FX: Exibe a Lista de Alarmes com Botões de Remoção */
+function exibirListaAlarmes() {
+    const container = document.getElementById('alarm-list-container');
+    if (!container) return; // Garante que o container existe
+
+    // Limpa o conteúdo anterior
+    container.innerHTML = ''; 
+
+    // Se não houver alarmes, mostra uma mensagem
+    if (alarmes.length === 0) {
+        container.innerHTML = '<p style="font-size: 0.9em; margin-top: 5px;">Nenhum alarme agendado.</p>';
+        return;
+    }
+
+    // Cria um elemento HTML para cada alarme
+    alarmes.forEach(alarme => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'alarm-item';
+        
+        // Texto do alarme
+        const timeSpan = document.createElement('span');
+        timeSpan.innerText = alarme;
+        
+        // Botão de remoção
+        const removeButton = document.createElement('button');
+        removeButton.className = 'remove-alarm-button';
+        removeButton.innerText = 'X';
+        
+        // Adiciona o listener para remover o alarme
+        removeButton.addEventListener('click', () => removerAlarme(alarme));
+        
+        // Monta o item
+        itemDiv.appendChild(timeSpan);
+        itemDiv.appendChild(removeButton);
+        
+        // Adiciona ao contêiner
+        container.appendChild(itemDiv);
+    });
+}
+
+function init() {
+    console.log('DOM carregado. Iniciando script.');
+    
+    // ATUALIZADO: Chama a nova função para exibir a lista inicial,
+    // garantindo que os alarmes da URL sejam exibidos com os botões 'X'.
+    exibirListaAlarmes(); // <--- MUDANÇA AQUI
+    gerarEExibirLink(); // NOVO: Também gera o link inicial
+    
+    // 1. SOLICITA PERMISSÃO DE NOTIFICAÇÃO (Pode ser feito aqui, mas a permissão de som é mais crítica)
+    requestPermission();
+    iniciarRelogio();
+    
+    // 2. REGISTRA OS LISTENERS DE CONTROLE DE INATIVIDADE (MANTENHA ESTES!)
+    document.addEventListener('click', resetarContador);
+    document.addEventListener('keypress', resetarContador);
+    
+    // NOVO: Listener para o botão de Adicionar Alarme
+    const addButton = document.getElementById('add-alarm-button');
+    if (addButton) {
+        addButton.addEventListener('click', adicionarAlarme);
+    }
+
+    // 3. NOVO: Lógica de Fechamento do Overlay
+    const closeButton = document.getElementById('close-overlay');
+    const overlay = document.getElementById('initial-overlay');
+
+    closeButton.addEventListener('click', () => {
+        // A) Desbloqueia o Áudio com o Gesto do Usuário
+        // Este é o ajuste crítico para garantir que o som toque mais tarde.
+        notificationSound.play().then(() => {
+            notificationSound.pause();
+            notificationSound.currentTime = 0;
+            console.log('Áudio desbloqueado para o domínio.');
+        }).catch(error => {
+            console.warn("Falha ao desbloquear o áudio. O som pode estar bloqueado pelo navegador.", error);
+        });
+        
+        // B) Fecha o Overlay
+        overlay.style.display = 'none';
+
+        // C) Inicia o Loop de Alarme
+        // Chama a função que agenda o primeiro alarme
+        agendarPrimeiraVerificacao();
+    });
+
+    // **Importante:** Se o elemento do overlay não for encontrado, ele deve iniciar automaticamente como um fallback.
+    if (!overlay) {
+        agendarPrimeiraVerificacao();
+    }
+}
+document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
