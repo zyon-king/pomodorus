@@ -100,7 +100,7 @@
 
     }
 
-    .alarm-control button {
+    .alarm-control button, .alarm-item {
         /* Estilização para o botão Criar Alarme */
         background: var(--border-color); /* Gradiente de vinho claro */
         color: var(--text-color);
@@ -124,12 +124,45 @@
         transform: scale(0.98);
     }
     
-    .lista-alarmes {
-      	display: flex;
-      	flex-direction: column;
-      	align-items: center;
+    /* --- Novo Estilo: Item individual do alarme --- */
+    -.alarm-item {
+        display: flex; /* Para alinhar o texto e o 'X' */
+        align-items: center;
+        gap: 10px; /* Espaçamento entre o horário e o 'X' */
+        padding: 5px 10px;
+        margin: 5px 0;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        background: var(--wine); /* Um fundo sutil para cada item */
+    }
+
+    /* --- Novo Estilo: Botão de Remover Alarme ('X') --- */
+    .remove-alarm-button {
+        background: #d32f2f; /* Vermelho escuro */
+        color: var(--text-color);
+        border: none;
+        padding: 3px 8px;
+        cursor: pointer;
+        border-radius: 3px;
         font-weight: bold;
-    	background: var(--light-wine); 
+        line-height: 1; /* Alinhamento vertical do 'X' */
+        transition: background 0.2s;
+    }
+
+    .remove-alarm-button:hover {
+        background: #e57373; /* Vermelho mais claro ao passar o mouse */
+    }
+
+    /* Ajuste na lista-alarmes para melhor alinhamento */
+    .lista-alarmes {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 10px;
+        font-weight: bold;
+        background: var(--light-wine);
+        padding: 10px; /* Adicionado padding para o fundo ficar melhor */
+        border-radius: 8px;
     }
     </style>
 </head>
@@ -150,15 +183,13 @@
     <span id="generated-link"></span>
         
         <p>___________________</p>
-    
-        
-        <div class="lista-alarmes">
-            <p>⏰ Lista de alarmes</p>
-            <span class="alarm-control" id="alarm-time"></span>
-        </div>
         
         <div id="countdown-display" class="generalText"></div>
-
+    
+        <div class="lista-alarmes">
+            <p>⏰ Lista de alarmes</p>
+            <div id="alarm-list-container"></div>
+        </div>
         
         <p>___________________</p>
         <h2>Como usar:</h2>
@@ -169,7 +200,10 @@
     </div>
     
     <div id="initial-overlay" class="initialOverlay">
-        <h2>Bem-vindo ao My Pomodorus</h2>
+        <h2>Bem-vindo ao My Pomodorus</h2>        
+        <span>___________________<span>
+        
+        <h2>Atenção</h2>
         <h3>Ao fechar essa mensagem a **lista de alarmes** será ativada e as notificações sonoras serão permitidas.</h3>
         <button id="close-overlay" class="closeOverlay">
             X
@@ -277,7 +311,7 @@ function verificarInatividade() {
     // Se não houver alarme agendado (devido à lista vazia), não faça nada.
     if (contagemRegressivaEmMinutos === 0 && (alarmeAtual === null || !alarmeAtual)) {
         console.log('Nenhum alarme definido, ignorando verificação de inatividade.');
-        atualizarStatus('Nenhum alarme definido.');
+        atualizarStatus();
         // Limpa o intervalo de notificação por segurança
         clearInterval(intervaloNotificacaoId);
         intervaloNotificacaoId = null;
@@ -348,7 +382,7 @@ function resetarContador() {
         atualizarStatus('Bem-vindo de volta! O contador de inatividade foi reiniciado.');
     } else {
         console.log('Nenhum alarme ativo. Verificação de inatividade desativada.');
-        atualizarStatus('Nenhum alarme definido. Temporizador inativo.');
+        atualizarStatus();
     }
 }
 
@@ -429,10 +463,9 @@ function adicionarAlarme() {
         // Mesmo que já exista, ainda queremos gerar o link atual
     }
 
-    // 3. Reordena e exibe a lista atualizada
-    // (A ordenação garante que o próximo alarme seja calculado corretamente)
+    // 3. Reordena e exibe a lista atualizada (AGORA CHAMA exibirListaAlarmes)
     alarmes.sort();
-    document.getElementById('alarm-time').innerText = alarmes.join(', ');
+    exibirListaAlarmes(); // <--- MUDANÇA AQUI
 
     // 4. Reinicia o contador para agendar o próximo alarme
     resetarContador(); 
@@ -465,11 +498,74 @@ function gerarEExibirLink() {
     }
 }
 
+/* FX: Remove Alarme */
+function removerAlarme(horarioParaRemover) {
+    // 1. Encontra o índice do alarme no array
+    const index = alarmes.indexOf(horarioParaRemover);
+
+    if (index > -1) {
+        // 2. Remove o alarme do array
+        alarmes.splice(index, 1);
+        
+        // 3. Re-exibe a lista (remove o elemento do DOM)
+        exibirListaAlarmes(); 
+
+        // 4. Reinicia o contador para agendar o próximo alarme
+        resetarContador();
+        atualizarStatus(`Alarme ${horarioParaRemover} removido.`);
+        
+        // 5. Gera e exibe o novo link (sem o alarme removido)
+        gerarEExibirLink();
+    }
+}
+
+/* FX: Exibe a Lista de Alarmes com Botões de Remoção */
+function exibirListaAlarmes() {
+    const container = document.getElementById('alarm-list-container');
+    if (!container) return; // Garante que o container existe
+
+    // Limpa o conteúdo anterior
+    container.innerHTML = ''; 
+
+    // Se não houver alarmes, mostra uma mensagem
+    if (alarmes.length === 0) {
+        container.innerHTML = '<p style="font-size: 0.9em; margin-top: 5px;">Nenhum alarme agendado.</p>';
+        return;
+    }
+
+    // Cria um elemento HTML para cada alarme
+    alarmes.forEach(alarme => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'alarm-item';
+        
+        // Texto do alarme
+        const timeSpan = document.createElement('span');
+        timeSpan.innerText = alarme;
+        
+        // Botão de remoção
+        const removeButton = document.createElement('button');
+        removeButton.className = 'remove-alarm-button';
+        removeButton.innerText = 'X';
+        
+        // Adiciona o listener para remover o alarme
+        removeButton.addEventListener('click', () => removerAlarme(alarme));
+        
+        // Monta o item
+        itemDiv.appendChild(timeSpan);
+        itemDiv.appendChild(removeButton);
+        
+        // Adiciona ao contêiner
+        container.appendChild(itemDiv);
+    });
+}
+
 function init() {
     console.log('DOM carregado. Iniciando script.');
     
-    // Chama a função para garantir que o array 'alarmes' seja exibido no HTML
-    document.getElementById('alarm-time').innerText = alarmes.join(', ');
+    // ATUALIZADO: Chama a nova função para exibir a lista inicial,
+    // garantindo que os alarmes da URL sejam exibidos com os botões 'X'.
+    exibirListaAlarmes(); // <--- MUDANÇA AQUI
+    gerarEExibirLink(); // NOVO: Também gera o link inicial
     
     // 1. SOLICITA PERMISSÃO DE NOTIFICAÇÃO (Pode ser feito aqui, mas a permissão de som é mais crítica)
     requestPermission();
@@ -480,11 +576,10 @@ function init() {
     document.addEventListener('keypress', resetarContador);
     
     // NOVO: Listener para o botão de Adicionar Alarme
-    const addButton = document.getElementById('add-alarm-button');
-    if (addButton) {
-        addButton.addEventListener('click', adicionarAlarme);
-    }
-
+    const addButton = document.getElementById('add-alarm-button');
+    if (addButton) {
+        addButton.addEventListener('click', adicionarAlarme);
+    }
 
     // 3. NOVO: Lógica de Fechamento do Overlay
     const closeButton = document.getElementById('close-overlay');
@@ -509,16 +604,11 @@ function init() {
         agendarPrimeiraVerificacao();
     });
 
-    // Remova a chamada inicial de agendarPrimeiraVerificacao() de init, pois agora ela será chamada pelo clique do overlay
-    // REMOVA: agendarPrimeiraVerificacao();
-    
     // **Importante:** Se o elemento do overlay não for encontrado, ele deve iniciar automaticamente como um fallback.
     if (!overlay) {
         agendarPrimeiraVerificacao();
     }
 }
-// O restante do seu script (resetarContador, enviarNotificacao, etc.) permanece inalterado!
-
 document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
