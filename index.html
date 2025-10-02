@@ -80,47 +80,6 @@
         border-radius: 5px; 
     }
     
-    .alarm-control  {
-        /* POSICIONAMENTO ABSOLUTO */
-        display: flex;
-    	background: var(--light-wine); 
-        color: var(--text-color); 
-        border: none; 
-        font-size: 1em; 
-        padding: 10px 20px; 
-        border-radius: 5px;        
-        margin-top: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-
-    #new-alarm-time {
-        padding: 10px;
-        border: 1px solid var(--border-color);
-        border-radius: 5px;
-        background-color: #0f0f23; /* Cor escura */
-        color: var(--text-color);
-        font-size: 1em;
-    }
-
-    #add-alarm-button {
-        background: var(--light-wine);
-        color: var(--text-color);
-        border: 2px solid var(--border-color);
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: background-color 0.3s;
-    }
-
-    #add-alarm-button:hover {
-        background: var(--wine); /* Um hover mais escuro */
-    }
-    
     #current-time  {
         /* POSICIONAMENTO ABSOLUTO */
         position: absolute; 
@@ -134,6 +93,42 @@
         cursor: pointer; 
         border-radius: 5px; 
     }
+    
+    /* --- Estilos para o Controle de Alarme Dinâmico --- */
+    .alarm-control {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 5px 10px;
+        gap: 5px; /* Espaço entre os elementos */
+    	background: var(--light-wine); 
+
+    }
+
+    .alarm-control button {
+        /* Estilização para o botão Criar Alarme */
+        background: var(--border-color); /* Gradiente de vinho claro */
+        color: var(--text-color);
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.3s ease, transform 0.1s ease;
+    }
+
+    .alarm-control input[type="time"] {
+    	padding: 10px;
+    }
+
+    .alarm-control button:hover {
+    	background: #593299;
+    }
+
+    .alarm-control button:active {
+        /* Efeito ao clicar */
+        transform: scale(0.98);
+    }
+    
     </style>
 </head>
 <body>
