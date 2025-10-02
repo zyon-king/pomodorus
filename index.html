@@ -50,7 +50,7 @@
         color: #cccccc;
         min-height: 30px;
     }
-    #countdown-display {
+    .generalText {
         font-size: 1em;
         font-weight: bold;
         /* Mantendo um azul vibrante ou ajustando para um tom que combine,
@@ -83,15 +83,10 @@
     #current-time  {
         /* POSICIONAMENTO ABSOLUTO */
         position: absolute; 
-        top: 20px; 
         right: 20px;
-    	background: var(--light-wine); 
-        color: var(--text-color); 
         border: none; 
         font-size: 1em; 
         padding: 10px 20px; 
-        cursor: pointer; 
-        border-radius: 5px; 
     }
     
     /* --- Estilos para o Controle de Alarme Dinâmico --- */
@@ -136,9 +131,6 @@
         <div id="current-time"></div>
         <h1>My Pomodorus</h1>
         <div id="status">Clique para iniciar...</div>
-        <p><strong>⏰ Lista de alarmes: | <span id="alarm-time"></span> |</strong></p>
-        <div id="countdown-display"></div>
-        
         <p>___________________</p>
         <div class="alarm-control">
             <label for="new-alarm-time">Novo Alarme:</label>
@@ -146,21 +138,34 @@
             <button id="add-alarm-button">Criar Alarme</button>
         </div>
         
+        <p id="generated-link-container" style="visibility: hidden;">
+    <strong class="generalText">Salve o link da sua lista de alarmes:</strong></p>
+    <span id="generated-link"></span>
+        
+        <p>___________________</p>
+    
+        <p><strong>⏰ Lista de alarmes: | <span id="alarm-time"></span> |</strong></p>
+        <div id="countdown-display" class="generalText"></div>
+        
         <p>___________________</p>
         <h2>Como usar:</h2>
-        <p>> Etapa 1/2 - edite o link com o início e fim de suas pausas.</p>
+        <p>> Etapa 1/2 - edite ou copie o link com o início e fim de suas pausas.</p>
         <p>> Etapa 2/2 - cole o link no seu navegador</p>
         <p><strong>Link de Exemplo:</strong></p>
         <p>https://mypomodorus.appwrite.network/?alarmes=11:12,11:15,11:20</p>
-        <p>___________________</p>
     </div>
+    
     <div id="initial-overlay" class="initialOverlay">
         <h2>Bem-vindo ao My Pomodorus</h2>
-        <p>Ao fechar essa mensagem a **lista de alarmes** será ativada e as notificações sonoras serão permitidas.</p>
+        <h3>Ao fechar essa mensagem a **lista de alarmes** será ativada e as notificações sonoras serão permitidas.</h3>
         <button id="close-overlay" class="closeOverlay">
             X
         </button>
-        <p style="margin-top: 15px; font-size: 0.8em;">(O áudio para futuras notificações também será ativado.)</p>
+        <p style="margin-top: 15px; font-size: 1em;">(O áudio para futuras notificações também será ativado.)</p>
+        
+        <p>___________________</p>
+        <p style="margin-top: 15px; font-size: 0.8em;">by Fontanari, C. | 2025</p>
+        
     </div>
 
     <script>
@@ -408,7 +413,7 @@ function adicionarAlarme() {
         alarmes.push(novoHorario);
     } else {
         atualizarStatus(`Alarme para ${novoHorario} já existe.`);
-        return;
+        // Mesmo que já exista, ainda queremos gerar o link atual
     }
 
     // 3. Reordena e exibe a lista atualizada
@@ -419,6 +424,32 @@ function adicionarAlarme() {
     // 4. Reinicia o contador para agendar o próximo alarme
     resetarContador(); 
     atualizarStatus(`Alarme ${novoHorario} adicionado com sucesso!`);
+    
+    // NOVO: Gera e exibe o link da URL
+    gerarEExibirLink();
+}
+
+/* FX: Gera e Exibe o Link da URL */
+function gerarEExibirLink() {
+    // 1. Obtém a base da URL (ex: https://mypomodorus.appwrite.network/)
+    // Isso garante que funcione em qualquer ambiente.
+    const baseUrl = window.location.origin + window.location.pathname;
+
+    // 2. Constrói a string de alarmes (ex: 11:12,11:15,11:20)
+    const alarmesStr = alarmes.join(',');
+
+    // 3. Constrói o link completo com o parâmetro 'alarmes'
+    const linkCompleto = `${baseUrl}?alarmes=${alarmesStr}`;
+
+    // 4. Exibe no DOM
+    const linkDisplay = document.getElementById('generated-link');
+    const container = document.getElementById('generated-link-container');
+    
+    if (linkDisplay && container) {
+        linkDisplay.innerText = linkCompleto;
+        // Torna a seção visível
+        container.style.visibility = 'visible'; 
+    }
 }
 
 function init() {
