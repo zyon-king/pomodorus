@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -96,6 +97,8 @@
         align-items: center;
         padding: 5px 10px;
         gap: 5px; /* Espaço entre os elementos */
+        max-width: 100%; 
+        width: 100%;
     	background: var(--light-wine); 
 
     }
@@ -138,6 +141,12 @@
         font-weight: bold;
         background: var(--light-wine);
         padding: 10px;
+
+        /* Define a largura máxima do grid (Ajuste este valor conforme a necessidade) */
+        max-width: 100%; 
+
+        /* Garante que o container se ajuste bem */
+        width: 100%;
         border-radius: 8px;
     }
 
@@ -151,12 +160,6 @@
 
         /* Espaçamento entre as linhas e colunas (o "miolo" do grid) */
         gap: 10px; 
-
-        /* Define a largura máxima do grid (Ajuste este valor conforme a necessidade) */
-        max-width: 100%; 
-
-        /* Garante que o container se ajuste bem */
-        width: 100%;
     }
 
     /* Opcional: Ajuste o item do alarme para ele se encaixar no grid */
@@ -179,6 +182,7 @@
         background: #d32f2f;
         color: var(--text-color);
         border: none;
+        margin-left: 5px; /* Remove a margem vertical desnecessária */
         padding: 3px 6px; /* Reduzido o padding do botão */
         cursor: pointer;
         border-radius: 3px;
