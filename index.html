@@ -264,7 +264,7 @@ function verificarInatividade() {
     // Se não houver alarme agendado (devido à lista vazia), não faça nada.
     if (contagemRegressivaEmMinutos === 0 && (alarmeAtual === null || !alarmeAtual)) {
         console.log('Nenhum alarme definido, ignorando verificação de inatividade.');
-        atualizarStatus('Nenhum alarme definido. Temporizador inativo.');
+        atualizarStatus('Nenhum alarme definido.');
         // Limpa o intervalo de notificação por segurança
         clearInterval(intervaloNotificacaoId);
         intervaloNotificacaoId = null;
